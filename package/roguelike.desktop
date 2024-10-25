@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=roguelike
+Exec=roguelike
+Terminal=false
+Categories=Game;
+Icon=icon

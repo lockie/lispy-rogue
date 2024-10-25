@@ -1,0 +1,28 @@
+* roguelike
+
+** Installation
+
+
+
+** Minimum system requirements
+
++ Windows 7 SP1, MacOS Monterey or Ubuntu 20.04
++ 2 GB of RAM
++ 60 Mb of free disk space
+
+** Author
+
++ Andrew Kravchuk (awkravchuk@gmail.com)
+
+** Credits
+
++ [[https://fonts.google.com/specimen/Inconsolata/about][Inconsolata font]]
++ [[http://tango.freedesktop.org][Tango icons]]
+
+** Copyright
+
+Copyright (c) 2024 Andrew Kravchuk (awkravchuk@gmail.com)
+
+** License
+
+Licensed under the MIT License.
