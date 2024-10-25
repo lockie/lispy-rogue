@@ -1,8 +1,5 @@
 (in-package #:roguelike)
 
-(define-constant +window-width+ 1280)
-(define-constant +window-height+ 800)
-
 (define-constant +repl-update-interval+ 0.3d0)
 
 (defvar *resources-path*
@@ -20,8 +17,8 @@
 (define-constant +config-path+ "../config.cfg" :test #'string=)
 
 (defun init ()
-  ;; TODO : put your initialization logic here
-  )
+  (ecs:bind-storage)
+  (load-sprites "urizen-tileset.tsx"))
 
 (declaim (type fixnum *fps*))
 (defvar *fps* 0)
@@ -29,9 +26,7 @@
 (defun update (dt)
   (unless (zerop dt)
     (setf *fps* (round 1 dt)))
-
-  ;; TODO : put your game logic here
-  )
+  (ecs:run-systems :dt (float dt 0.0)))
 
 (defvar *font*)
 

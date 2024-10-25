@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tileset version="1.10" tiledversion="1.11.0" name="urizen-tileset" tilewidth="24" tileheight="24" spacing="2" margin="2" tilecount="2550" columns="51">
+ <image source="urizen-tileset.png" width="1328" height="1300"/>
+ <tile id="153">
+  <properties>
+   <property name="name" value="wall"/>
+  </properties>
+ </tile>
+ <tile id="154">
+  <properties>
+   <property name="name" value="wall2"/>
+  </properties>
+ </tile>
+ <tile id="155">
+  <properties>
+   <property name="name" value="wall3"/>
+  </properties>
+ </tile>
+ <tile id="816">
+  <properties>
+   <property name="name" value="hero"/>
+  </properties>
+ </tile>
+</tileset>
