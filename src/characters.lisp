@@ -24,5 +24,8 @@
              (dy (* character-speed dt (sin angle)))
              (new-x (+ position-x dx))
              (new-y (+ position-y dy)))
-        (setf position-x new-x
-              position-y new-y))))
+        (if (blocked new-x new-y)
+            (setf character-target-x position-x
+                  character-target-y position-y)
+            (setf position-x new-x
+                  position-y new-y)))))

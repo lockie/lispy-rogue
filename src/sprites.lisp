@@ -41,3 +41,7 @@
        (:position :x ,x :y ,y)
        (:tile :col ,(* +tile-size+ (floor x +tile-size+))
               :row ,(* +tile-size+ (floor y +tile-size+)))))))
+
+(defun change-sprite (object new-sprite)
+  (setf (sprite-bitmap object)
+        (sprite-bitmap (sprite-prefab new-sprite))))

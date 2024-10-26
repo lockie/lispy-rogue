@@ -21,7 +21,7 @@
   (load-sprites "urizen-tileset.tsx")
   (make-map)
   (make-player-object 480.0 480.0)
-  (make-enemy-object :goblin-warrior 250.0 250.0)
+  (make-enemy-object :goblin-warrior 192.0 192.0)
   )
 
 (declaim (type fixnum *fps*))
