@@ -4,6 +4,9 @@
 (define-constant +window-width+ 1280)
 (define-constant +window-height+ 800)
 
+(define-constant +world-width+ 960.0)
+(define-constant +world-height+ 600.0)
+
 (define-constant +tile-size+ 24.0)
 
 (declaim ;;(inline round/tile-size)
@@ -31,8 +34,13 @@
          (round/tile-size row))
         :type fixnum :index tiles))
 
+(ecs:defcomponent map-tile
+  (blocks 0 :type bit)
+  (obscures blocks :type bit))
+
 (ecs:defsystem set-tile
   (:components-ro (position)
+   :components-no (map-tile)
    :components-rw (tile))
   (setf tile-col (round/tile-size position-x)
         tile-row (round/tile-size position-y)

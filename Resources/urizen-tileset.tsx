@@ -16,6 +16,11 @@
    <property name="name" value="wall3"/>
   </properties>
  </tile>
+ <tile id="270">
+  <properties>
+   <property name="name" value="grass1"/>
+  </properties>
+ </tile>
  <tile id="436">
   <properties>
    <property name="name" value="goblin-warrior"/>
