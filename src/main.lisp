@@ -18,7 +18,10 @@
 
 (defun init ()
   (ecs:bind-storage)
-  (load-sprites "urizen-tileset.tsx"))
+  (load-sprites "urizen-tileset.tsx")
+  (make-player-object 480.0 480.0)
+  (make-enemy-object :goblin-warrior 250.0 250.0)
+  )
 
 (declaim (type fixnum *fps*))
 (defvar *fps* 0)

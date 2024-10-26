@@ -1,5 +1,6 @@
 (defpackage #:roguelike
-  (:use #:cl)
-  (:import-from #:alexandria #:define-constant #:make-keyword)
+  (:use #:cl #:let-plus)
+  (:import-from #:alexandria #:clamp #:define-constant #:make-keyword)
+  (:import-from #:float-features #:single-float-nan #:float-nan-p)
   (:local-nicknames (#:tiled #:cl-tiled))
   (:export #:main))

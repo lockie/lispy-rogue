@@ -45,4 +45,16 @@
 (defun approx-equal (a b &optional (epsilon 0.5))
   (< (abs (- a b)) epsilon))
 
+(declaim ;;(inline nearest-tile)
+         (ftype (function (single-float single-float single-float single-float)
+                          (values single-float single-float))
+                nearest-tile))
+(defun nearest-tile (source-x source-y dest-x dest-y)
+  (values
+   (- dest-x (* +tile-size+ (signum (- dest-x source-x))))
+   (- dest-y (* +tile-size+ (signum (- dest-y source-y))))))
+
+(declaim (type boolean *turn* *should-quit*))
+(defvar *turn* nil)
 (defvar *should-quit*)
+
