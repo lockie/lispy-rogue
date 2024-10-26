@@ -6,10 +6,10 @@
 
 (define-constant +tile-size+ 24.0)
 
-(declaim (inline round/tile-size)
+(declaim ;;(inline round/tile-size)
          (ftype (function (single-float) single-float) round/tile-size))
 (defun round/tile-size (x)
-  (* +tile-size+ (floor x +tile-size+)))
+  (* +tile-size+ (round x +tile-size+)))
 
 (ecs:defcomponent parent
     (entity -1 :type ecs:entity :index children))
