@@ -31,7 +31,18 @@
              (= position-y character-target-y))
     (setf *turn* nil)))
 
+(declaim (type fixnum *player-position-hash*))
+(defvar *player-position-hash* 0)
+
+(ecs:defsystem recalculate-fov
+  (:components-ro (player character position))
+  (let ((new-player-position-hash (a*:encode-float-coordinates position-x
+                                                               position-y)))
+    (when (/= new-player-position-hash *player-position-hash*)
+      (setf *player-position-hash* new-player-position-hash)
+      (recalculate-fov position-x position-y character-vision-range))))
+
 (defun make-player-object (x y)
   (let ((object (make-sprite-object :hero x y)))
-    (make-character object :speed 50.0)
+    (make-character object :speed 50.0 :vision-range 100.0)
     (make-player object)))

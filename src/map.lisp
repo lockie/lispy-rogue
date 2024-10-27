@@ -1,6 +1,15 @@
 (in-package #:roguelike)
 
 
+(ecs:defsystem draw-map-sprites
+  (:components-ro (tile sprite view)
+   :components-no (character)
+   :after (set-tile)
+   :when (plusp view-lit)
+   :initially (al:hold-bitmap-drawing t)
+   :finally (al:hold-bitmap-drawing nil))
+  (al:draw-bitmap sprite-bitmap tile-col tile-row 0))
+
 (define-constant +room-min-size+ (* 5  +tile-size+))
 (define-constant +room-max-size+ (* 10 +tile-size+))
 (define-constant +max-rooms+ 30)
@@ -74,9 +83,9 @@
           :from 0.0 :below +world-width+ :by +tile-size+
         :do (loop :for y :of-type single-float
                     :from 0.0 :below +world-height+ :by +tile-size+
-                  :do (make-map-tile
-                       (make-sprite-object :wall x y)
-                       :blocks 1)))
+                  :do (let ((object (make-sprite-object :wall x y)))
+                        (make-map-tile object :blocks 1)
+                        (make-view object))))
   (loop
     :with rooms := nil
     :with player-x := 0.0

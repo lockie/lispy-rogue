@@ -15,6 +15,7 @@
                 ((:file "package")
                  (:file "common")
                  (:file "sprites")
+                 (:file "fov")
                  (:file "map")
                  (:file "characters")
                  (:file "melee")

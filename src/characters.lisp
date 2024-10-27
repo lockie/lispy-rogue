@@ -1,22 +1,10 @@
 (in-package #:roguelike)
 
 
-(ecs:defcomponent character
-  (speed 0.0 :type single-float)
-  (target-x single-float-nan :type single-float)
-  (target-y single-float-nan :type single-float))
-
-(ecs:defsystem draw-map-sprites
-  (:components-ro (tile sprite)
-   :components-no (character)
-   :after (set-tile)
-   :initially (al:hold-bitmap-drawing t)
-   :finally (al:hold-bitmap-drawing nil))
-  (al:draw-bitmap sprite-bitmap tile-col tile-row 0))
-
 (ecs:defsystem draw-character-sprites
   (:components-ro (tile sprite character)
    :after (set-tile draw-map-sprites)
+   :when (or (has-player-p entity) (lit tile-col tile-row))
    :initially (al:hold-bitmap-drawing t)
    :finally (al:hold-bitmap-drawing nil))
   (al:draw-bitmap sprite-bitmap tile-col tile-row 0))

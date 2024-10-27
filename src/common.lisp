@@ -46,6 +46,12 @@
         tile-row (round/tile-size position-y)
         tile-hash (a*:encode-float-coordinates tile-col tile-row)))
 
+(ecs:defcomponent character
+  (vision-range 0.0 :type single-float)
+  (speed 0.0 :type single-float)
+  (target-x single-float-nan :type single-float)
+  (target-y single-float-nan :type single-float))
+
 (declaim
  (inline approx-equal)
  (ftype (function (single-float single-float &optional single-float) boolean)
