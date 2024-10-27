@@ -2,7 +2,8 @@
 
 
 (ecs:defcomponent view
-  (lit 0 :type bit :index fov))
+  (lit 0 :type bit :index fov)
+  (explored 0 :type bit))
 
 
 (defun lit (x y)
