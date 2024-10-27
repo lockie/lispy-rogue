@@ -15,6 +15,7 @@
                 ((:file "package")
                  (:file "common")
                  (:file "sprites")
+                 (:file "map")
                  (:file "characters")
                  (:file "melee")
                  (:file "enemies")
