@@ -62,6 +62,9 @@
    (- dest-x (* +tile-size+ (signum (- dest-x source-x))))
    (- dest-y (* +tile-size+ (signum (- dest-y source-y))))))
 
+(defun random-from-range (start end)
+  (+ start (random (+ 1 (- end start)))))
+
 (declaim (type boolean *turn* *should-quit*))
 (defvar *turn* nil)
 (defvar *should-quit*)

@@ -6,6 +6,21 @@
   (target-x single-float-nan :type single-float)
   (target-y single-float-nan :type single-float))
 
+(ecs:defsystem draw-map-sprites
+  (:components-ro (tile sprite)
+   :components-no (character)
+   :after (set-tile)
+   :initially (al:hold-bitmap-drawing t)
+   :finally (al:hold-bitmap-drawing nil))
+  (al:draw-bitmap sprite-bitmap tile-col tile-row 0))
+
+(ecs:defsystem draw-character-sprites
+  (:components-ro (tile sprite character)
+   :after (set-tile draw-map-sprites)
+   :initially (al:hold-bitmap-drawing t)
+   :finally (al:hold-bitmap-drawing nil))
+  (al:draw-bitmap sprite-bitmap tile-col tile-row 0))
+
 (ecs:defsystem move-characters
   (:components-rw (position character)
    :arguments ((dt single-float))

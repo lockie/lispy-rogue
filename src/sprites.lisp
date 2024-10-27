@@ -9,13 +9,6 @@
                                         (al:destroy-bitmap bitmap))))
   (bitmap (cffi:null-pointer) :type cffi:foreign-pointer))
 
-(ecs:defsystem draw-sprites
-  (:components-ro (tile sprite)
-   :after (set-tile)
-   :initially (al:hold-bitmap-drawing t)
-   :finally (al:hold-bitmap-drawing nil))
-  (al:draw-bitmap sprite-bitmap tile-col tile-row 0))
-
 (defun load-bitmap (filename)
   (al:ensure-loaded #'al:load-bitmap (namestring filename)))
 
