@@ -3,7 +3,7 @@
 
 (ecs:defsystem draw-character-sprites
   (:components-ro (tile sprite character)
-   :after (set-tile draw-map-sprites)
+   :after (set-tile)
    :when (or (has-player-p entity) (lit tile-col tile-row))
    :initially (al:hold-bitmap-drawing t)
    :finally (al:hold-bitmap-drawing nil))

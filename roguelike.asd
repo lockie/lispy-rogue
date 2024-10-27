@@ -16,11 +16,11 @@
                  (:file "common")
                  (:file "sprites")
                  (:file "fov")
-                 (:file "map")
                  (:file "characters")
                  (:file "melee")
                  (:file "enemies")
                  (:file "player")
+                 (:file "map")
                  (:file "main"))))
   :description "An Autumn Lisp Game Jam 2024 entry"
   :defsystem-depends-on (#:deploy)

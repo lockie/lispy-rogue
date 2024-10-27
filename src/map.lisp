@@ -6,6 +6,7 @@
    :components-rw (view)
    :components-no (character)
    :after (set-tile)
+   :before (draw-character-sprites)
    :when (or (plusp view-lit) (plusp view-explored))
    :initially (al:hold-bitmap-drawing t)
    :finally (al:hold-bitmap-drawing nil))
@@ -27,6 +28,7 @@
 
 (define-constant +room-min-size+ (* 5  +tile-size+))
 (define-constant +room-max-size+ (* 10 +tile-size+))
+(define-constant +room-max-monsters+ 3)
 (define-constant +max-rooms+ 30)
 
 (defstruct rect
@@ -60,18 +62,25 @@
         :thereis (and (has-map-tile-p tile)
                       (plusp (map-tile-blocks tile)))))
 
-(defun make-room (x1 y1 x2 y2)
+(defun place-objects (x1 y1 x2 y2)
+  (dotimes (_ (random (1+ +room-max-monsters+)))
+    (let ((x (random-from-range (+ x1 +tile-size+) (- x2 +tile-size+)))
+          (y (random-from-range (+ y1 +tile-size+) (- y2 +tile-size+))))
+      (make-enemy-object :goblin-warrior x y))))
+
+(defun make-room (x1 y1 x2 y2 &key first)
   (loop
     :for x :of-type single-float
-    :from (+ x1 +tile-size+) :below x2 :by +tile-size+
+      :from (+ x1 +tile-size+) :below x2 :by +tile-size+
     :do (loop
           :for y :of-type single-float
-          :from (+ y1 +tile-size+) :below y2 :by +tile-size+
+            :from (+ y1 +tile-size+) :below y2 :by +tile-size+
           :do (let ((tile (first (tiles (a*:encode-float-coordinates x y)))))
                 (with-map-tile () tile
                   (setf blocks 0
                         obscures 0))
-                (change-sprite tile :floor)))))
+                (change-sprite tile :floor)))
+    :finally (unless first (place-objects x1 y1 x2 y2))))
 
 (defun make-horizontal-tunnel (x1 x2 y)
   (loop
@@ -118,7 +127,8 @@
     :for intersects := (loop :for r :in rooms :thereis (intersect room r))
     :unless intersects
       :do (make-room (rect-x1 room) (rect-y1 room)
-                     (rect-x2 room) (rect-y2 room))
+                     (rect-x2 room) (rect-y2 room)
+                     :first (not rooms))
           (let+ (((&values center-x center-y) (center room))
                  (new-x (round/tile-size center-x))
                  (new-y (round/tile-size center-y)))
