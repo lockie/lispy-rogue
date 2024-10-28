@@ -7,6 +7,9 @@
 (defmacro keys-down (state &rest keys)
   `(or ,@(mapcar (lambda (key) `(al:key-down ,state ,key)) keys)))
 
+(declaim (type boolean *key-pressed*))
+(defparameter *key-pressed* nil)
+
 (ecs:defsystem control-player
   (:components-ro (player position tile)
    :components-rw (character)
@@ -18,12 +21,18 @@
       (when (keys-down keyboard-state :left  :A :H) (setf dx -1.0))
       (when (keys-down keyboard-state :right :D :L) (setf dx +1.0))
 
-      (unless (and (zerop dx) (zerop dy))
-        (setf character-target-x (clamp (+ tile-col (* dx +tile-size+))
-                                        0.0 (- +world-width+ +tile-size+))
-              character-target-y (clamp (+ tile-row (* dy +tile-size+))
-                                        0.0 (- +world-height+ +tile-size+))
-              *turn* t)))))
+      (if (and (zerop dx) (zerop dy))
+          (setf *key-pressed* nil)
+          (unless *key-pressed*
+            (let ((target-x (clamp (+ tile-col (* dx +tile-size+))
+                                 0.0 (- +world-width+ +tile-size+)))
+                (target-y (clamp (+ tile-row (* dy +tile-size+))
+                                 0.0 (- +world-height+ +tile-size+))))
+            ;; TODO test if this is an enemy to attack
+            (setf character-target-x target-x
+                  character-target-y target-y
+                  *turn* t
+                  *key-pressed* t)))))))
 
 (ecs:defsystem stop-turn
   (:components-ro (player character position))
@@ -42,5 +51,5 @@
 
 (defun make-player-object (x y)
   (let ((object (make-sprite-object :hero x y)))
-    (make-character object :speed 50.0 :vision-range 100.0)
+    (make-character object :speed 150.0 :vision-range 100.0)
     (make-player object)))
