@@ -13,6 +13,9 @@
 
 (define-constant +font-path+ "inconsolata.ttf" :test #'string=)
 (define-constant +font-size+ 24)
+(define-constant +ui-font-path+ "fantasque-sans-mono.ttf" :test #'string=)
+(define-constant +ui-font-size+ 28)
+
 
 (define-constant +config-path+ "../config.cfg" :test #'string=)
 
@@ -24,20 +27,18 @@
 (declaim (type fixnum *fps*))
 (defvar *fps* 0)
 
-(defun update (dt)
+(defun update (dt ui-context)
   (unless (zerop dt)
     (setf *fps* (round 1 dt)))
-  (ecs:run-systems :dt (float dt 0.0)))
+  (ecs:run-systems :dt (float dt 0.0) :ui-context ui-context)
+  (message-log ui-context))
 
 (defvar *font*)
 
 (defun render ()
-
+  (nk:allegro-render) 
   (al:draw-text *font* (al:map-rgba 255 255 255 0) 0 0 0
-                (format nil "~d FPS" *fps*))
-
-  ;; TODO : put your drawing code here
-  )
+                (format nil "~d FPS" *fps*)))
 
 (cffi:defcallback %main :int ((argc :int) (argv :pointer))
   (declare (ignore argc argv))
@@ -94,15 +95,24 @@
                :with *font* := (al:ensure-loaded #'al:load-ttf-font
                                                  +font-path+
                                                  (- +font-size+) 0)
+               :with ui-font := (al:ensure-loaded
+                                 #'nk:allegro-font-create-from-file
+                                 +ui-font-path+ (- +ui-font-size+) 0)
+               :with ui-context := (nk:allegro-init ui-font display
+                                                    +window-width+
+                                                    +window-height+)
                :with ticks :of-type double-float := (al:get-time)
                :with last-repl-update :of-type double-float := ticks
                :with dt :of-type double-float := 0d0
                :while (loop
                         :named event-loop
+                        :initially (nk:input-begin ui-context)
                         :while (al:get-next-event event-queue event)
                         :for type := (cffi:foreign-slot-value
                                       event '(:union al:event) 'al::type)
-                        :always (not (eq type :display-close)))
+                        :do (nk:allegro-handle-event event)
+                        :always (not (eq type :display-close))
+                        :finally (nk:input-end ui-context))
                :do (let ((new-ticks (al:get-time)))
                      (setf dt (- new-ticks ticks)
                            ticks new-ticks))
@@ -112,10 +122,12 @@
                      (setf last-repl-update ticks))
                    (al:clear-to-color (al:map-rgb 0 0 0))
                    (livesupport:continuable
-                     (update dt)
+                     (update dt ui-context)
                      (render))
                    (al:flip-display)
-               :finally (al:destroy-font *font*)))
+               :finally (nk:allegro-shutdown)
+                        (nk:allegro-font-del ui-font)
+                        (al:destroy-font *font*)))
         (al:inhibit-screensaver nil)
         (al:destroy-event-queue event-queue)
         (al:destroy-display display)

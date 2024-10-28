@@ -7,6 +7,7 @@
                #:cl-fast-ecs
                #:cl-liballegro
                #:cl-liballegro-nuklear
+               #:cl-liballegro-nuklear/declarative
                #:cl-tiled
                #:livesupport)
   :serial t
@@ -14,6 +15,7 @@
                 :components
                 ((:file "package")
                  (:file "common")
+                 (:file "ui")
                  (:file "sprites")
                  (:file "fov")
                  (:file "characters")

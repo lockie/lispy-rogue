@@ -13,6 +13,7 @@
 (ecs:defsystem control-player
   (:components-ro (player position tile)
    :components-rw (character)
+   :enable (not *message-log-focused*)
    :after (move-characters))
   (al:with-current-keyboard-state keyboard-state
     (let ((dx 0) (dy 0))
