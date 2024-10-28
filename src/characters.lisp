@@ -10,6 +10,7 @@
 
 (ecs:defsystem move-characters
   (:components-rw (position tile character)
+   :components-no (attack)
    :arguments ((dt single-float))
    :enable *turn*)
   (when (or (float-nan-p character-target-x)

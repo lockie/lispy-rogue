@@ -68,7 +68,7 @@
     (let ((x (random-from-range (+ x1 +tile-size+) (- x2 +tile-size+)))
           (y (random-from-range (+ y1 +tile-size+) (- y2 +tile-size+))))
       (unless (blocked -1 x y)
-        (make-enemy-object :goblin-warrior x y)))))
+        (make-enemy-object :goblin-warrior "the goblin" x y)))))
 
 (defun make-room (x1 y1 x2 y2 &key first)
   (loop

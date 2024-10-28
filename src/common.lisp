@@ -39,10 +39,21 @@
   (obscures blocks :type bit))
 
 (ecs:defcomponent character
+  (name "" :type simple-string)
   (vision-range 0.0 :type single-float)
   (speed 0.0 :type single-float)
   (target-x single-float-nan :type single-float)
   (target-y single-float-nan :type single-float))
+
+(ecs:defcomponent attack
+  (elapsed 0.0 :type single-float)
+  (target -1 :type ecs:entity))
+
+(ecs:defcomponent defense
+  (evasion 0.0 :type single-float)
+  (dodge 0.0 :type single-float)
+  (block-chance 0.0 :type single-float)
+  (armor 0.0 :type single-float))
 
 (declaim
  (inline approx-equal)
@@ -50,6 +61,12 @@
         approx-equal))
 (defun approx-equal (a b &optional (epsilon 0.5))
   (< (abs (- a b)) epsilon))
+
+(declaim
+ ;;(inline rating->chance)
+ (ftype (function (single-float) single-float) rating->chance))
+(defun rating->chance (value)
+  (/ 1.0 (+ 1.0 (sqrt (max 0.0 value)))))
 
 (declaim ;;(inline nearest-tile)
          (ftype (function (single-float single-float single-float single-float)
@@ -62,6 +79,26 @@
 
 (defun random-from-range (start end)
   (+ start (random (+ 1 (- end start)))))
+
+(defun verb (infinitive entity)
+  (cond
+    ((has-player-p entity)
+     infinitive)
+
+    ((or (uiop:string-suffix-p infinitive  "s")
+         (uiop:string-suffix-p infinitive  "z")
+         (uiop:string-suffix-p infinitive  "x")
+         (uiop:string-suffix-p infinitive "sh")
+         (uiop:string-suffix-p infinitive "ch"))
+     (concatenate 'string infinitive "es"))
+
+    ((and (uiop:string-suffix-p infinitive "y")
+          (not (member (char infinitive (- (length infinitive) 2))
+                       '(#\a #\e #\i #\o #\u)
+                       :test #'char=)))
+     (concatenate 'string (subseq infinitive 0 (1- (length infinitive))) "ies"))
+
+    (t (concatenate 'string infinitive "s"))))
 
 (declaim (type boolean *turn* *should-quit*))
 (defvar *turn* nil)

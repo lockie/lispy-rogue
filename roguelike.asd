@@ -21,6 +21,7 @@
                  (:file "characters")
                  (:file "melee")
                  (:file "enemies")
+                 (:file "fights")
                  (:file "player")
                  (:file "map")
                  (:file "main"))))
