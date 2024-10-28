@@ -22,7 +22,9 @@
 (defun init ()
   (ecs:bind-storage)
   (load-sprites "urizen-tileset.tsx")
-  (make-map))
+  (make-map)
+  (setf *message-log* nil)
+  (log-message "You enter the dungeon."))
 
 (declaim (type fixnum *fps*))
 (defvar *fps* 0)
