@@ -5,7 +5,6 @@
   (:components-ro (tile sprite)
    :components-rw (view)
    :components-no (character)
-   :after (set-tile)
    :before (draw-character-sprites)
    :when (or (plusp view-lit) (plusp view-explored))
    :initially (al:hold-bitmap-drawing t)
@@ -55,18 +54,21 @@
        (>= (rect-y2 rect1) (rect-y1 rect2))))
 
 
-(defun blocked (x y)
+(defun blocked (entity x y)
   (loop :for tile :of-type ecs:entity :in (tiles (a*:encode-float-coordinates
                                                   (round/tile-size x)
                                                   (round/tile-size y)))
-        :thereis (and (has-map-tile-p tile)
-                      (plusp (map-tile-blocks tile)))))
+        :thereis (or (and (has-map-tile-p tile)
+                          (plusp (map-tile-blocks tile)))
+                     (and (/= tile entity)
+                          (has-character-p tile)))))
 
 (defun place-objects (x1 y1 x2 y2)
   (dotimes (_ (random (1+ +room-max-monsters+)))
     (let ((x (random-from-range (+ x1 +tile-size+) (- x2 +tile-size+)))
           (y (random-from-range (+ y1 +tile-size+) (- y2 +tile-size+))))
-      (make-enemy-object :goblin-warrior x y))))
+      (unless (blocked -1 x y)
+        (make-enemy-object :goblin-warrior x y)))))
 
 (defun make-room (x1 y1 x2 y2 &key first)
   (loop

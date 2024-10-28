@@ -17,7 +17,7 @@
      :w +world-width+ :h (- +window-height+ +world-height+)
      :styles ((:item-color :window-fixed-background :r 0 :g 0 :b 0)
               (:item-color :edit-normal :r 0 :g 0 :b 0)))
-  (ui:layout-space (:height (- +window-height+ +world-height+ +ui-font-size+ 1)
+  (ui:layout-space (:height (- +window-height+ +world-height+ +ui-font-size+ 6)
                     :format :dynamic)
     (ui:layout-space-push :x 0.02 :y 0.0 :w 0.97 :h 1.0)
     (setf *message-log-focused*

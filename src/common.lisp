@@ -15,7 +15,7 @@
   (* +tile-size+ (round x +tile-size+)))
 
 (ecs:defcomponent parent
-    (entity -1 :type ecs:entity :index children))
+  (entity -1 :type ecs:entity :index children))
 
 (ecs:hook-up ecs:*entity-deleting-hook*
              (lambda (entity)
@@ -37,14 +37,6 @@
 (ecs:defcomponent map-tile
   (blocks 0 :type bit)
   (obscures blocks :type bit))
-
-(ecs:defsystem set-tile
-  (:components-ro (position)
-   :components-no (map-tile)
-   :components-rw (tile))
-  (setf tile-col (round/tile-size position-x)
-        tile-row (round/tile-size position-y)
-        tile-hash (a*:encode-float-coordinates tile-col tile-row)))
 
 (ecs:defcomponent character
   (vision-range 0.0 :type single-float)
