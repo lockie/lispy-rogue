@@ -78,5 +78,6 @@
 (defun recalculate-fov (player-x player-y radius)
   (dolist (v (fov 1))
     (setf (view-lit v) 0))
+  (set-lit player-x player-y)
   (loop :for (xx xy yx yy) :across +mult+
         :do (cast-light player-x player-y 0 1.0 0.0 radius xx xy yx yy)))
