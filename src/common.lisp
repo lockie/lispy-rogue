@@ -45,6 +45,10 @@
   (target-x single-float-nan :type single-float)
   (target-y single-float-nan :type single-float))
 
+(ecs:defcomponent health
+  (max 0 :type fixnum)
+  (points max :type fixnum))
+
 (ecs:defcomponent attack
   (elapsed 0.0 :type single-float)
   (target -1 :type ecs:entity))

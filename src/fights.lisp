@@ -1,10 +1,6 @@
 (in-package #:roguelike)
 
 
-(ecs:defcomponent health
-  (max 0 :type fixnum)
-  (points max :type fixnum))
-
 (defun attack (attacker target)
   (unless (has-attack-p attacker) ;; souls-liek rules baby
     (log-message "~@(~a~) ~a at ~a."
