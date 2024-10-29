@@ -38,7 +38,7 @@
                                                    (item-owner tile))))
                                   :return tile))
                 (progn (setf (item-owner item) entity)
-                       (log-message "You've picked up ~a." (item-name item)))
+                       (log-message "You pick up ~a." (item-name item)))
                 (log-message "There's nothing to pick up."))))
           (setf *pickup-key-pressed* nil)))))
 
