@@ -33,7 +33,8 @@
   (unless (zerop dt)
     (setf *fps* (round 1 dt)))
   (ecs:run-systems :dt (float dt 0.0) :ui-context ui-context)
-  (message-log ui-context))
+  (message-log ui-context)
+  (stats ui-context))
 
 (defvar *font*)
 

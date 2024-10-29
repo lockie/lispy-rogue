@@ -15,7 +15,6 @@
                 :components
                 ((:file "package")
                  (:file "common")
-                 (:file "ui")
                  (:file "sprites")
                  (:file "fov")
                  (:file "characters")
@@ -23,6 +22,7 @@
                  (:file "enemies")
                  (:file "fights")
                  (:file "player")
+                 (:file "ui")
                  (:file "map")
                  (:file "main"))))
   :description "An Autumn Lisp Game Jam 2024 entry"

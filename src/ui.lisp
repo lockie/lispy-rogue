@@ -1,13 +1,6 @@
 (in-package #:roguelike)
 
 
-(declaim (type list *message-log*))
-(defparameter *message-log* nil)
-
-(declaim (type boolean *message-log-focused*))
-(defparameter *message-log-focused* nil)
-
-
 (cffi:defcallback %edit-filter :int ((edit :pointer) (char :unsigned-int))
   (declare (ignore edit char))
   0)
@@ -26,5 +19,11 @@
                 :flags (:multiline :no-horizontal-scroll :selectable :clipboard)
                 :filter (cffi:callback %edit-filter))))))
 
-(defun log-message (control &rest args)
-  (push (apply #'format nil control args) *message-log*))
+(ui:defwindow stats ()
+    (:x +world-width+ :y 0
+     :w (- +window-width+ +world-width+) :h +window-height+
+     :styles ((:item-color :window-fixed-background :r 0 :g 0 :b 0)))
+  (ui:layout-space (:height +ui-font-size+ :format :dynamic)
+    (ui:layout-space-push :x 0 :y 0 :w 1.0 :h 1.0)
+    (with-health () (player-entity 1)
+      (ui:label (format nil "HP: ~a / ~a" points max)))))

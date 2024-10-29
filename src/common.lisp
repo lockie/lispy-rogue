@@ -104,3 +104,11 @@
 (defvar *turn* nil)
 (defvar *should-quit*)
 
+(declaim (type list *message-log*))
+(defparameter *message-log* nil)
+
+(declaim (type boolean *message-log-focused*))
+(defparameter *message-log-focused* nil)
+
+(defun log-message (control &rest args)
+  (push (apply #'format nil control args) *message-log*))
