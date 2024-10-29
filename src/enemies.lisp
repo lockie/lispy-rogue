@@ -8,7 +8,7 @@
   (melee-range entity))
 
 (ecs:defsystem chase-player
-  (:components-ro (position enemy)
+  (:components-ro (position enemy health)
    :components-rw (character)
    :with ((player player-x player-y) := (let ((player (player-entity 1)))
                                           (with-position () player
@@ -35,4 +35,4 @@
     (make-enemy object)
     (make-health object :max 20)
     (make-defense object :evasion 10.0 :dodge 15.0 :block-chance 0.1 :armor 5.0)
-    (make-melee object :min-damage 5.0 :max-damage 10.0 :accuracy 25.0  :duration 0.3)))
+    (make-melee object :min-damage 5.0 :max-damage 10.0 :accuracy 25.0 :duration 0.3)))

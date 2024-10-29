@@ -31,13 +31,16 @@
                    (target-y (clamp (+ tile-row (* dy +tile-size+))
                                     0.0 (- +world-height+ +tile-size+))))
                ;; TODO test if this is an enemy to attack
-               (setf character-target-x target-x
-                     character-target-y target-y
-                     *turn* t
+               (if-let (target-character (live-character-at target-x target-y))
+                 (attack entity target-character)
+                 (setf character-target-x target-x
+                       character-target-y target-y))
+               (setf *turn* t
                      *key-pressed* t))))))))
 
 (ecs:defsystem stop-turn
-  (:components-ro (player character position))
+  (:components-ro (player character position)
+   :components-no (attack))
   (when (and (= position-x character-target-x)
              (= position-y character-target-y))
     (setf *turn* nil)))
@@ -55,5 +58,6 @@
   (let ((object (make-sprite-object :hero x y)))
     (make-character object :name "you" :speed 150.0 :vision-range 100.0)
     (make-player object)
+    (make-health object :max 100)
     (make-defense object :evasion 10.0 :dodge 10.0 :block-chance 0.1 :armor 10.0)
-    (make-health object :max 100)))
+    (make-melee object :min-damage 10.0 :max-damage 15.0 :accuracy 20.0 :duration 0.4)))

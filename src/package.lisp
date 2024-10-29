@@ -1,7 +1,8 @@
 (defpackage #:roguelike
   (:use #:cl #:let-plus)
   (:import-from #:alexandria #:clamp #:define-constant #:format-symbol
-                #:make-keyword)
+                #:if-let #:make-keyword)
+  (:import-from #:cl-ppcre #:split)
   (:import-from #:float-features #:single-float-nan #:float-nan-p)
   (:local-nicknames (#:tiled #:cl-tiled)
                     (#:ui #:cl-liballegro-nuklear/declarative))

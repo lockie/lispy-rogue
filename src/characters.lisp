@@ -1,6 +1,7 @@
 (in-package #:roguelike)
 
 
+;; TODO dont draw corpse if there's character on top?
 (ecs:defsystem draw-character-sprites
   (:components-ro (tile sprite character)
    :when (or (has-player-p entity) (lit tile-col tile-row))

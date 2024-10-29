@@ -60,4 +60,9 @@
    :when (not (plusp health-points)))
   (log-message "~@(~a~) ~a." character-name (verb "die" entity))
   (delete-health entity)
-  (change-sprite entity (format-symbol :keyword "~a-CORPSE" sprite-name)))
+  (when (has-attack-p entity)
+    (delete-attack entity))
+  (change-sprite
+   entity
+   (format-symbol :keyword "~a-CORPSE"
+                  (first (split "-" (string sprite-name) :limit 2)))))

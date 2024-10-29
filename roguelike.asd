@@ -8,6 +8,7 @@
                #:cl-liballegro
                #:cl-liballegro-nuklear
                #:cl-liballegro-nuklear/declarative
+               #:cl-ppcre
                #:cl-tiled
                #:livesupport)
   :serial t
