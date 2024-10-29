@@ -30,7 +30,6 @@
                                     0.0 (- +world-width+ +tile-size+)))
                    (target-y (clamp (+ tile-row (* dy +tile-size+))
                                     0.0 (- +world-height+ +tile-size+))))
-               ;; TODO test if this is an enemy to attack
                (if-let (target-character (live-character-at target-x target-y))
                  (attack entity target-character)
                  (setf character-target-x target-x
