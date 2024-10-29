@@ -5,7 +5,7 @@
   (:components-ro (tile sprite)
    :components-rw (view)
    :components-no (character)
-   :before (draw-character-sprites)
+   :before (draw-character-sprites draw-item-sprites)
    :when (or (plusp view-lit) (plusp view-explored))
    :initially (al:hold-bitmap-drawing t)
    :finally (al:hold-bitmap-drawing nil))
@@ -28,6 +28,7 @@
 (define-constant +room-min-size+ (* 5  +tile-size+))
 (define-constant +room-max-size+ (* 10 +tile-size+))
 (define-constant +room-max-monsters+ 3)
+(define-constant +room-max-items+ 2)
 (define-constant +max-rooms+ 30)
 
 (defstruct rect
@@ -77,7 +78,12 @@
     (let ((x (random-from-range (+ x1 +tile-size+) (- x2 +tile-size+)))
           (y (random-from-range (+ y1 +tile-size+) (- y2 +tile-size+))))
       (unless (blocked -1 x y)
-        (make-enemy-object :goblin-warrior "the goblin" x y)))))
+        (make-enemy-object :goblin-warrior "the goblin" x y))))
+  (dotimes (_ (random (1+ +room-max-items+)))
+    (let ((x (random-from-range (+ x1 +tile-size+) (- x2 +tile-size+)))
+          (y (random-from-range (+ y1 +tile-size+) (- y2 +tile-size+))))
+      (unless (blocked -1 x y)
+        (make-health-potion (random-from-range 5 25) x y)))))
 
 (defun make-room (x1 y1 x2 y2 &key first)
   (loop

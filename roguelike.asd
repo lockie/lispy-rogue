@@ -24,6 +24,7 @@
                  (:file "fights")
                  (:file "player")
                  (:file "ui")
+                 (:file "items")
                  (:file "map")
                  (:file "main"))))
   :description "An Autumn Lisp Game Jam 2024 entry"

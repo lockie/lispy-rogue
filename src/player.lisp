@@ -7,8 +7,8 @@
 (defmacro keys-down (state &rest keys)
   `(or ,@(mapcar (lambda (key) `(al:key-down ,state ,key)) keys)))
 
-(declaim (type boolean *key-pressed*))
-(defparameter *key-pressed* nil)
+(declaim (type boolean *move-key-pressed*))
+(defparameter *move-key-pressed* nil)
 
 (ecs:defsystem control-player
   (:components-ro (player health position tile)
@@ -24,8 +24,8 @@
        (when (keys-down keyboard-state :right :D :L) (setf dx +1.0))
 
        (if (and (zerop dx) (zerop dy))
-           (setf *key-pressed* nil)
-           (unless *key-pressed*
+           (setf *move-key-pressed* nil)
+           (unless *move-key-pressed*
              (let ((target-x (clamp (+ tile-col (* dx +tile-size+))
                                     0.0 (- +world-width+ +tile-size+)))
                    (target-y (clamp (+ tile-row (* dy +tile-size+))
@@ -35,7 +35,7 @@
                  (setf character-target-x target-x
                        character-target-y target-y))
                (setf *turn* t
-                     *key-pressed* t))))))))
+                     *move-key-pressed* t))))))))
 
 (ecs:defsystem stop-turn
   (:components-ro (player character position)

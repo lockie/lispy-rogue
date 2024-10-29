@@ -51,4 +51,9 @@
    <property name="name" value="goblin-corpse"/>
   </properties>
  </tile>
+ <tile id="1305">
+  <properties>
+   <property name="name" value="health-potion"/>
+  </properties>
+ </tile>
 </tileset>

@@ -35,6 +35,9 @@
                                  "the wall"
                                  "the floor"))))
 
+        ((has-item-p tile)
+         (setf description (item-name tile)))
+
         ((has-enemy-p tile)
          (when (or (has-health-p tile) (not description))
            (setf description (character-name tile))))))
