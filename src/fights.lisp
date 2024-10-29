@@ -56,12 +56,16 @@
     (delete-attack entity)))
 
 (ecs:defsystem demise-characters
-  (:components-ro (health character sprite)
+  (:components-ro (health sprite)
+   :components-rw (character)
    :when (not (plusp health-points)))
   (log-message "~@(~a~) ~a." character-name (verb "die" entity))
   (delete-health entity)
   (when (has-attack-p entity)
     (delete-attack entity))
+  (setf character-name (if (has-player-p entity)
+                           "your body"
+                           (format nil "the corpse of ~a" character-name)))
   (change-sprite
    entity
    (format-symbol :keyword "~a-CORPSE"
