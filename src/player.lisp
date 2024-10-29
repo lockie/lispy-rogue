@@ -11,29 +11,30 @@
 (defparameter *key-pressed* nil)
 
 (ecs:defsystem control-player
-  (:components-ro (player position tile)
+  (:components-ro (player health position tile)
    :components-rw (character)
    :enable (not *message-log-focused*)
    :after (move-characters))
-  (al:with-current-keyboard-state keyboard-state
-    (let ((dx 0) (dy 0))
-      (when (keys-down keyboard-state :up    :W :K) (setf dy -1.0))
-      (when (keys-down keyboard-state :down  :S :J) (setf dy +1.0))
-      (when (keys-down keyboard-state :left  :A :H) (setf dx -1.0))
-      (when (keys-down keyboard-state :right :D :L) (setf dx +1.0))
+  (when (plusp health-points)
+   (al:with-current-keyboard-state keyboard-state
+     (let ((dx 0) (dy 0))
+       (when (keys-down keyboard-state :up    :W :K) (setf dy -1.0))
+       (when (keys-down keyboard-state :down  :S :J) (setf dy +1.0))
+       (when (keys-down keyboard-state :left  :A :H) (setf dx -1.0))
+       (when (keys-down keyboard-state :right :D :L) (setf dx +1.0))
 
-      (if (and (zerop dx) (zerop dy))
-          (setf *key-pressed* nil)
-          (unless *key-pressed*
-            (let ((target-x (clamp (+ tile-col (* dx +tile-size+))
-                                 0.0 (- +world-width+ +tile-size+)))
-                (target-y (clamp (+ tile-row (* dy +tile-size+))
-                                 0.0 (- +world-height+ +tile-size+))))
-            ;; TODO test if this is an enemy to attack
-            (setf character-target-x target-x
-                  character-target-y target-y
-                  *turn* t
-                  *key-pressed* t)))))))
+       (if (and (zerop dx) (zerop dy))
+           (setf *key-pressed* nil)
+           (unless *key-pressed*
+             (let ((target-x (clamp (+ tile-col (* dx +tile-size+))
+                                    0.0 (- +world-width+ +tile-size+)))
+                   (target-y (clamp (+ tile-row (* dy +tile-size+))
+                                    0.0 (- +world-height+ +tile-size+))))
+               ;; TODO test if this is an enemy to attack
+               (setf character-target-x target-x
+                     character-target-y target-y
+                     *turn* t
+                     *key-pressed* t))))))))
 
 (ecs:defsystem stop-turn
   (:components-ro (player character position))

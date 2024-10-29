@@ -48,8 +48,16 @@
   (when (>= attack-elapsed melee-duration)
     (with-position (target-x target-y) attack-target
       (if (and (approx-equal position-x target-x melee-range)
-               (approx-equal position-y target-y melee-range))
+               (approx-equal position-y target-y melee-range)
+               (has-health-p attack-target))
           (maybe-hit entity melee-accuracy melee-min-damage melee-max-damage)
           (log-message "~@(~a~) only ~a through the air."
                        character-name (verb "slice" entity))))
     (delete-attack entity)))
+
+(ecs:defsystem demise-characters
+  (:components-ro (health character sprite)
+   :when (not (plusp health-points)))
+  (log-message "~@(~a~) ~a." character-name (verb "die" entity))
+  (delete-health entity)
+  (change-sprite entity (format-symbol :keyword "~a-CORPSE" sprite-name)))

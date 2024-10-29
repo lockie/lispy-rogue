@@ -61,7 +61,8 @@
         :thereis (or (and (has-map-tile-p tile)
                           (plusp (map-tile-blocks tile)))
                      (and (/= tile entity)
-                          (has-character-p tile)))))
+                          (has-character-p tile)
+                          (has-health-p tile)))))
 
 (defun place-objects (x1 y1 x2 y2)
   (dotimes (_ (random (1+ +room-max-monsters+)))

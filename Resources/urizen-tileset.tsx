@@ -41,4 +41,14 @@
    <property name="name" value="hero"/>
   </properties>
  </tile>
+ <tile id="839">
+  <properties>
+   <property name="name" value="hero-corpse"/>
+  </properties>
+ </tile>
+ <tile id="902">
+  <properties>
+   <property name="name" value="goblin-corpse"/>
+  </properties>
+ </tile>
 </tileset>

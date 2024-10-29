@@ -13,7 +13,7 @@
    :with ((player player-x player-y) := (let ((player (player-entity 1)))
                                           (with-position () player
                                             (values player x y))))
-   :enable *turn*)
+   :enable (and *turn* (has-health-p player)))
   (let ((attack-range (attack-range entity)))
     (cond
       ((and (approx-equal position-x player-x attack-range)
@@ -33,5 +33,6 @@
   (let ((object (make-sprite-object sprite x y)))
     (make-character object :name name :speed 50.0 :vision-range 100.0)
     (make-enemy object)
+    (make-health object :max 20)
     (make-defense object :evasion 10.0 :dodge 15.0 :block-chance 0.1 :armor 5.0)
     (make-melee object :min-damage 5.0 :max-damage 10.0 :accuracy 25.0  :duration 0.3)))
