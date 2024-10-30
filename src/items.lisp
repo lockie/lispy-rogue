@@ -45,7 +45,7 @@
                 (progn (setf (item-owner item) entity
                              (parent-entity item) entity)
                        (log-message "You pick up ~a." (item-name item)))
-                (log-message "There is nothing to pick up."))))
+                (log-message "There is nothing to pick up here."))))
           (setf *pickup-key-pressed* nil)))))
 
 (defun use-item (item x y)
