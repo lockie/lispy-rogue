@@ -38,6 +38,9 @@
         ((has-item-p tile)
          (setf description (item-name tile)))
 
+        ((has-stairs-p tile)
+         (setf description "the stairs to the next level."))
+
         ((has-enemy-p tile)
          (when (or (has-health-p tile) (not description))
            (setf description (character-name tile))))))

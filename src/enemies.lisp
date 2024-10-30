@@ -35,4 +35,5 @@
     (make-enemy object)
     (make-health object :max 20)
     (make-defense object :evasion 10.0 :dodge 15.0 :block-chance 0.1 :armor 5.0)
-    (make-melee object :min-damage 5.0 :max-damage 10.0 :accuracy 25.0 :duration 0.3)))
+    (make-melee object :min-damage 5.0 :max-damage 10.0 :accuracy 25.0 :duration 0.3)
+    object))

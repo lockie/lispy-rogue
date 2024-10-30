@@ -42,7 +42,8 @@
                                              (not (ecs:entity-valid-p
                                                    (item-owner tile))))
                                   :return tile))
-                (progn (setf (item-owner item) entity)
+                (progn (setf (item-owner item) entity
+                             (parent-entity item) entity)
                        (log-message "You pick up ~a." (item-name item)))
                 (log-message "There is nothing to pick up."))))
           (setf *pickup-key-pressed* nil)))))
@@ -77,9 +78,11 @@
 (defun make-health-potion (points x y)
   (let ((object (make-sprite-object :health-potion x y)))
     (make-item object :name "the health potion")
-    (make-item-health-potion object :points points)))
+    (make-item-health-potion object :points points)
+    object))
 
 (defun make-fireball-scroll (damage x y)
   (let ((object (make-sprite-object :scroll x y)))
     (make-item object :name "the fireball scroll")
-    (make-item-fireball-scroll object :damage damage)))
+    (make-item-fireball-scroll object :damage damage)
+    object))

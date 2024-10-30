@@ -1,6 +1,19 @@
 (in-package #:roguelike)
 
 
+(ecs:defcomponent level
+  (number 0 :type fixnum))
+
+(ecs:defcomponent stairs
+  (current-level -1 :type ecs:entity))
+
+(defun make-exit-from (level x y)
+  (loop :for tile :in (tiles (a*:encode-float-coordinates x y))
+        :when (has-map-tile-p tile)
+        :do (change-sprite tile :stairs)
+            (make-stairs tile :current-level level)
+            (return)))
+
 (ecs:defsystem draw-map-sprites
   (:components-ro (tile sprite)
    :components-rw (view)
@@ -54,7 +67,6 @@
        (<= (rect-y1 rect1) (rect-y2 rect2))
        (>= (rect-y2 rect1) (rect-y1 rect2))))
 
-
 (defun blocked (entity x y)
   (loop :for tile :of-type ecs:entity :in (tiles (a*:encode-float-coordinates
                                                   (round/tile-size x)
@@ -73,19 +85,23 @@
                    (has-health-p tile))
            :return tile))
 
-(defun place-objects (x1 y1 x2 y2)
+(defun place-objects (level x1 y1 x2 y2)
   (dotimes (_ (random (1+ +room-max-monsters+)))
     (let ((x (random-from-range (+ x1 +tile-size+) (- x2 +tile-size+)))
           (y (random-from-range (+ y1 +tile-size+) (- y2 +tile-size+))))
       (unless (blocked -1 x y)
-        (make-enemy-object :goblin-warrior "the goblin" x y))))
+        (make-parent (make-enemy-object :goblin-warrior "the goblin" x y)
+                     :entity level))))
   (dotimes (_ (random (1+ +room-max-items+)))
     (let ((x (random-from-range (+ x1 +tile-size+) (- x2 +tile-size+)))
           (y (random-from-range (+ y1 +tile-size+) (- y2 +tile-size+))))
       (unless (blocked -1 x y)
-        (make-health-potion (random-from-range 5 25) x y)))))
+        (make-parent (if (zerop (random 2))
+                         (make-health-potion (random-from-range 5 25) x y)
+                         (make-fireball-scroll (random-from-range 15 30) x y))
+                     :entity level)))))
 
-(defun make-room (x1 y1 x2 y2 &key first)
+(defun make-room (level x1 y1 x2 y2 &key first)
   (loop
     :for x :of-type single-float
       :from (+ x1 +tile-size+) :below x2 :by +tile-size+
@@ -97,7 +113,7 @@
                   (setf blocks 0
                         obscures 0))
                 (change-sprite tile :floor)))
-    :finally (unless first (place-objects x1 y1 x2 y2))))
+    :finally (unless first (place-objects level x1 y1 x2 y2))))
 
 (defun make-horizontal-tunnel (x1 x2 y)
   (loop
@@ -119,18 +135,22 @@
                   obscures 0))
           (change-sprite tile :floor))))
 
-(defun make-map ()
-  (loop :for x :of-type single-float
-          :from 0.0 :below +world-width+ :by +tile-size+
-        :do (loop :for y :of-type single-float
-                    :from 0.0 :below +world-height+ :by +tile-size+
-                  :do (let ((object (make-sprite-object :wall x y)))
-                        (make-map-tile object :blocks 1)
-                        (make-view object))))
+(defun make-map (level-number)
   (loop
+    :with level := (ecs:make-object `((:level :number ,level-number)))
     :with rooms := nil
     :with player-x := 0.0
     :with player-y := 0.0
+    :initially (delete-tile (player-entity 1)) ;; HACK
+               (loop
+                 :for x :of-type single-float
+                 :from 0.0 :below +world-width+ :by +tile-size+
+                 :do (loop :for y :of-type single-float
+                           :from 0.0 :below +world-height+ :by +tile-size+
+                           :do (let ((object (make-sprite-object :wall x y)))
+                                 (make-parent object :entity level)
+                                 (make-map-tile object :blocks 1)
+                                 (make-view object))))
     :for i :from 0 :below +max-rooms+
     :for w := (round/tile-size
                (random-from-range +room-min-size+ +room-max-size+))
@@ -143,7 +163,8 @@
     :for room := (make-rect* x y w h)
     :for intersects := (loop :for r :in rooms :thereis (intersect room r))
     :unless intersects
-      :do (make-room (rect-x1 room) (rect-y1 room)
+      :do (make-room level
+                     (rect-x1 room) (rect-y1 room)
                      (rect-x2 room) (rect-y2 room)
                      :first (not rooms))
           (let+ (((&values center-x center-y) (center room))
@@ -163,4 +184,45 @@
                 (setf player-x new-x
                       player-y new-y))
             (push room rooms))
-    :finally (make-player-object player-x player-y)))
+    :finally (let+ (((&values cx cy) (center (first rooms))))
+               (make-exit-from level
+                               (round/tile-size cx)
+                               (round/tile-size cy)))
+             (let ((player (player-entity 1)))
+               (assign-position player :x player-x :y player-y)
+               (assign-tile player :col player-x :row player-y)
+               (with-character () player
+                 (setf target-x player-x
+                       target-y player-y))
+               (setf *player-position-hash* -1))
+             (return level)))
+
+
+(declaim (type boolean *stairs-key-pressed*))
+(defparameter *stairs-key-pressed* nil)
+
+(ecs:defsystem switch-level
+  (:components-ro (player health tile)
+   :enable (and (not *message-log-focused*)
+                (not *inventory-shown*)
+                (not *throw-window-shown*)
+                (not *targeting*)))
+  (when (plusp health-points)
+    (al:with-current-keyboard-state keyboard-state
+      (if (and (al:key-down keyboard-state :fullstop)
+               (or (al:key-down keyboard-state :lshift)
+                   (al:key-down keyboard-state :rshift)))
+          (unless *stairs-key-pressed*
+            (if-let (stairs (find-if #'has-stairs-p
+                                     (tiles (a*:encode-float-coordinates
+                                             tile-col tile-row))))
+              (with-stairs () stairs
+                (let* ((current-level-number (level-number current-level))
+                       (new-level (1+ current-level-number)))
+                  (ecs:delete-entity current-level)
+                  (make-map new-level)
+                  (log-message "You descend to the ~:r level." new-level)))
+              (log-message "There is no stairs here."))
+            (setf *turn* nil
+                  *stairs-key-pressed* t))
+          (setf *stairs-key-pressed* nil)))))

@@ -22,7 +22,8 @@
 (defun init ()
   (ecs:bind-storage)
   (load-sprites "urizen-tileset.tsx")
-  (make-map)
+  (make-player-object 0.0 0.0)
+  (make-map 1)
   (setf *message-log* nil)
   (log-message "You enter the dungeon."))
 
