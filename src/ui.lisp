@@ -62,8 +62,8 @@
 (define-constant +inventory-keys+ '(:1 :2 :3 :4 :5 :6 :7 :8 :9 :0 :a :b :c)
   :test #'equal)
 
-(ui:defwindow inventory (items)
-    (:title "Inventory"
+(ui:defwindow inventory (title items)
+    (:title title
      :flags (border title)
      :x 280 :y 50 :w 400 :h 500
      :styles ((:item-color :window-fixed-background :r 0 :g 0 :b 0)
@@ -90,13 +90,19 @@
 (defparameter *inventory-key-pressed* nil)
 (defparameter *inventory-shown* nil)
 
+(declaim (type boolean *throw-key-pressed* *throw-window-shown*))
+(defparameter *throw-key-pressed* nil)
+(defparameter *throw-window-shown* nil)
+
 (ecs:defsystem rummage-inventory
   (:components-ro (player health)
-   :enable (and (not *message-log-focused*) (not *targeting*))
+   :enable (and (not *message-log-focused*)
+                (not *throw-window-shown*)
+                (not *targeting*))
    :arguments ((ui-context cffi:foreign-pointer)))
   (when (plusp health-points)
     (al:with-current-keyboard-state keyboard-state
-      (if (al:key-down keyboard-state :i)
+      (if (al:key-down keyboard-state :I)
           (block key-pressed
             (unless *inventory-key-pressed*
               (setf *inventory-key-pressed* t
@@ -107,7 +113,39 @@
         (setf *inventory-shown* nil
               *turn* t)))
     (when *inventory-shown*
-      (when-let (selected-item (inventory ui-context (items entity)))
+      (when-let (selected-item
+                 (inventory ui-context "Inventory" (items entity)))
         (use-item selected-item nil nil)
         (setf *inventory-shown* nil
               *turn* t)))))
+
+(ecs:defsystem throw-away-item
+  (:components-ro (player health position tile)
+   :enable (and (not *message-log-focused*)
+                (not *inventory-shown*)
+                (not *targeting*))
+   :arguments ((ui-context cffi:foreign-pointer)))
+  (when (plusp health-points)
+    (al:with-current-keyboard-state keyboard-state
+      (if (al:key-down keyboard-state :T)
+          (block key-pressed
+            (unless *throw-key-pressed*
+              (setf *throw-key-pressed* t
+                    *throw-window-shown* (not *throw-window-shown*)
+                    *turn* (not *throw-window-shown*))))
+          (setf *throw-key-pressed* nil))
+      (when (and *throw-window-shown* (al:key-down keyboard-state :escape))
+        (setf *throw-window-shown* nil
+              *turn* t))
+      (when *throw-window-shown*
+        (when-let (selected-item
+                   (inventory ui-context "Throw away item" (items entity)))
+          (log-message "You throw away ~a." (item-name selected-item))
+          (setf (item-owner selected-item) -1
+                (position-x selected-item) position-x
+                (position-y selected-item) position-y
+                (tile-col  selected-item) tile-col
+                (tile-row  selected-item) tile-row
+                (tile-hash selected-item) tile-hash)
+          (setf *throw-window-shown* nil
+                *turn* t))))))

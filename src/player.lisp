@@ -15,6 +15,7 @@
    :components-rw (character)
    :enable (and (not *message-log-focused*)
                 (not *inventory-shown*)
+                (not *throw-window-shown*)
                 (not *targeting*))
    :after (move-characters))
   (when (plusp health-points)
