@@ -8,6 +8,9 @@
 (ecs:defcomponent item-health-potion
   (points 0 :type fixnum))
 
+(ecs:defcomponent item-fireball-scroll
+  (damage 0 :type fixnum))
+
 (ecs:defsystem draw-item-sprites
   (:components-ro (tile sprite item)
    :when (and (not (ecs:entity-valid-p item-owner))
@@ -44,11 +47,11 @@
                 (log-message "There is nothing to pick up."))))
           (setf *pickup-key-pressed* nil)))))
 
-(defun use-item (player item)
+(defun use-item (item x y)
   (cond
     ((has-item-health-potion-p item)
      (let ((potion-points (item-health-potion-points item)))
-       (with-health () player
+       (with-health () (player-entity 1)
          (if (= points max)
              (log-message "You are already at full health.")
              (block do-drink
@@ -57,6 +60,17 @@
                (log-message "You drink health potion, restoring ~a points."
                             potion-points))))))
 
+    ((has-item-fireball-scroll-p item)
+     (if (and x y)
+         (loop :initially (log-message "The fireball explodes.")
+               :with damage := (item-fireball-scroll-damage item)
+               :for character :in (area-damage x y damage)
+               :do (log-message "~@(~a~) ~a burned for ~a damage."
+                                (character-name character)
+                                (verb "get" character) damage)
+               :finally (ecs:delete-entity item))
+         (start-targeting item)))
+
     (t
      (log-message "You don't know how to use ~a." (item-name item)))))
 
@@ -64,3 +78,8 @@
   (let ((object (make-sprite-object :health-potion x y)))
     (make-item object :name "the health potion")
     (make-item-health-potion object :points points)))
+
+(defun make-fireball-scroll (damage x y)
+  (let ((object (make-sprite-object :scroll x y)))
+    (make-item object :name "the fireball scroll")
+    (make-item-fireball-scroll object :damage damage)))

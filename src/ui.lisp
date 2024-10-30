@@ -108,6 +108,6 @@
               *turn* t)))
     (when *inventory-shown*
       (when-let (selected-item (inventory ui-context (items entity)))
-        (use-item entity selected-item)
+        (use-item selected-item nil nil)
         (setf *inventory-shown* nil
               *turn* t)))))

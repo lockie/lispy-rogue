@@ -56,4 +56,9 @@
    <property name="name" value="health-potion"/>
   </properties>
  </tile>
+ <tile id="1761">
+  <properties>
+   <property name="name" value="scroll"/>
+  </properties>
+ </tile>
 </tileset>

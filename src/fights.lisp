@@ -12,6 +12,19 @@
   (with-health () target
     (decf points value)))
 
+(defun area-damage (col row value)
+  (loop :for x :from (max 0.0 (- col +tile-size+))
+        :to (min +world-width+ (+ col +tile-size+)) :by +tile-size+
+        :nconcing
+           (loop :for y :from (max 0.0 (- row +tile-size+))
+                 :to (min +world-height+ (+ row +tile-size+)) :by +tile-size+
+                 :for tiles := (tiles (a*:encode-float-coordinates x y))
+                 :for character := (loop :for tile :in tiles
+                                         :when (has-character-p tile)
+                                         :return tile)
+                 :when character :do (damage character value)
+                 :when character :collect character)))
+
 (defun maybe-hit (attacker accuracy min-damage max-damage)
   (with-attack () attacker
     (with-defense () target
