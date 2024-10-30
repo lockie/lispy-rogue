@@ -10,8 +10,9 @@
   (al:draw-bitmap sprite-bitmap tile-col tile-row 0))
 
 (ecs:defsystem move-characters
-  (:components-rw (position tile character)
+  (:components-rw (position tile character health)
    :components-no (attack)
+   :when (plusp health-points)
    :arguments ((dt single-float))
    :enable *turn*)
   (when (or (float-nan-p character-target-x)
