@@ -104,11 +104,14 @@
           (block key-pressed
             (unless *inventory-key-pressed*
               (setf *inventory-key-pressed* t
-                    *inventory-shown* (not *inventory-shown*))))
+                    *inventory-shown* (not *inventory-shown*)
+                    *turn* (not *inventory-shown*))))
           (setf *inventory-key-pressed* nil))
       (when (and *inventory-shown* (al:key-down keyboard-state :escape))
-        (setf *inventory-shown* nil)))
+        (setf *inventory-shown* nil
+              *turn* t)))
     (when *inventory-shown*
       (when-let (selected-item (inventory ui-context (items entity)))
         (use-item entity selected-item)
-        (setf *inventory-shown* nil)))))
+        (setf *inventory-shown* nil
+              *turn* t)))))
