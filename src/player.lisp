@@ -13,7 +13,7 @@
 (ecs:defsystem control-player
   (:components-ro (player health position tile)
    :components-rw (character)
-   :enable (not *message-log-focused*)
+   :enable (and (not *message-log-focused*) (not *inventory-shown*))
    :after (move-characters))
   (when (plusp health-points)
    (al:with-current-keyboard-state keyboard-state

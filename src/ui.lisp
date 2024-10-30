@@ -62,3 +62,53 @@
                      (/ +tile-size+ 2))))
         (ui:layout-space-push :x 0.02 :y 1.0 :w 1.0 :h 1.0)
         (ui:label-wrap (format nil "You see ~a." description))))))
+
+(define-constant +inventory-keys+ '(:1 :2 :3 :4 :5 :6 :7 :8 :9 :0 :a :b :c)
+  :test #'equal)
+
+(ui:defwindow inventory (items)
+    (:title "Inventory"
+     :flags (border title)
+     :x 300 :y 50 :w 400 :h 500
+     :styles ((:item-color :window-fixed-background :r 0 :g 0 :b 0)
+              (:item-color :window-header-active :r 0 :g 0 :b 0)
+              (:item-color :window-header-normal :r 0 :g 0 :b 0)
+              (:item-color :selectable-normal :r 0 :g 0 :b 0)))
+  (ui:layout-row-static :height +ui-font-size+ :item-width 375 :columns 1)
+  (al:with-current-keyboard-state keyboard-state
+    (cffi:with-foreign-object (selected :int (length +inventory-keys+))
+      (dotimes (i (length +inventory-keys+))
+        (setf (cffi:mem-aref selected :int i) 0))
+      (loop :for item :in items
+            :for key :in +inventory-keys+
+            :for i :of-type fixnum :from 0
+            :do (ui:selectable-label
+                 (format nil "(~(~a~)) ~a" key (item-name item))
+                 (cffi:inc-pointer selected (* i (cffi:foreign-type-size :int))))
+                (when (or (plusp (cffi:mem-aref selected :int i))
+                          (al:key-down keyboard-state key))
+                  (return-from inventory item)))))
+  nil)
+
+(declaim (type boolean *inventory-key-pressed* *inventory-shown*))
+(defparameter *inventory-key-pressed* nil)
+(defparameter *inventory-shown* nil)
+
+(ecs:defsystem rummage-inventory
+  (:components-ro (player health)
+   :enable (not *message-log-focused*)
+   :arguments ((ui-context cffi:foreign-pointer)))
+  (when (plusp health-points)
+    (al:with-current-keyboard-state keyboard-state
+      (if (al:key-down keyboard-state :i)
+          (block key-pressed
+            (unless *inventory-key-pressed*
+              (setf *inventory-key-pressed* t
+                    *inventory-shown* (not *inventory-shown*))))
+          (setf *inventory-key-pressed* nil))
+      (when (and *inventory-shown* (al:key-down keyboard-state :escape))
+        (setf *inventory-shown* nil)))
+    (when *inventory-shown*
+      (when-let (selected-item (inventory ui-context (items entity)))
+        (use-item entity selected-item)
+        (setf *inventory-shown* nil)))))

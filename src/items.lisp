@@ -22,7 +22,7 @@
 
 (ecs:defsystem pick-item
   (:components-ro (player health tile)
-   :enable (not *message-log-focused*))
+   :enable (and (not *message-log-focused*) (not *inventory-shown*)))
   (when (plusp health-points)
     (al:with-current-keyboard-state keyboard-state
       (if (keys-down keyboard-state :G :comma)
@@ -41,6 +41,22 @@
                        (log-message "You pick up ~a." (item-name item)))
                 (log-message "There's nothing to pick up."))))
           (setf *pickup-key-pressed* nil)))))
+
+(defun use-item (player item)
+  (cond
+    ((has-item-health-potion-p item)
+     (let ((potion-points (item-health-potion-points item)))
+       (with-health () player
+         (if (= points max)
+             (log-message "You are already at full health.")
+             (block do-drink
+               (setf points (min (+ points potion-points) max))
+               (ecs:delete-entity item)
+               (log-message "You drink health potion, restoring ~a points."
+                            potion-points))))))
+
+    (t
+     (log-message "You don't know how to use ~a." (item-name item)))))
 
 (defun make-health-potion (points x y)
   (let ((object (make-sprite-object :health-potion x y)))
