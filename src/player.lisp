@@ -13,11 +13,14 @@
 (ecs:defsystem control-player
   (:components-ro (player health position tile)
    :components-rw (character)
-   :enable (and (not *message-log-focused*) (not *inventory-shown*))
+   :enable (and (not *message-log-focused*)
+                (not *inventory-shown*)
+                (not *targeting*))
    :after (move-characters))
   (when (plusp health-points)
    (al:with-current-keyboard-state keyboard-state
      (let ((dx 0) (dy 0))
+       ;; TODO https://roguebasin.com/index.php/Preferred_Key_Controls
        (when (keys-down keyboard-state :up    :W :K) (setf dy -1.0))
        (when (keys-down keyboard-state :down  :S :J) (setf dy +1.0))
        (when (keys-down keyboard-state :left  :A :H) (setf dx -1.0))

@@ -26,6 +26,7 @@
                  (:file "items")
                  (:file "ui")
                  (:file "map")
+                 (:file "targeting")
                  (:file "main"))))
   :description "An Autumn Lisp Game Jam 2024 entry"
   :defsystem-depends-on (#:deploy)

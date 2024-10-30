@@ -54,12 +54,8 @@
     (al:with-current-mouse-state mouse-state
       (when-let (description
                  (describe-tile
-                  (- (cffi:foreign-slot-value mouse-state
-                                              '(:struct al:mouse-state) 'al::x)
-                     (/ +tile-size+ 2))
-                  (- (cffi:foreign-slot-value mouse-state
-                                              '(:struct al:mouse-state) 'al::y)
-                     (/ +tile-size+ 2))))
+                  (- (mouse-state-x mouse-state) (/ +tile-size+ 2))
+                  (- (mouse-state-y mouse-state) (/ +tile-size+ 2))))
         (ui:layout-space-push :x 0.02 :y 1.0 :w 1.0 :h 1.0)
         (ui:label-wrap (format nil "You see ~a." description))))))
 
@@ -96,7 +92,7 @@
 
 (ecs:defsystem rummage-inventory
   (:components-ro (player health)
-   :enable (not *message-log-focused*)
+   :enable (and (not *message-log-focused*) (not *targeting*))
    :arguments ((ui-context cffi:foreign-pointer)))
   (when (plusp health-points)
     (al:with-current-keyboard-state keyboard-state

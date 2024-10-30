@@ -114,5 +114,16 @@
 (declaim (type boolean *message-log-focused*))
 (defparameter *message-log-focused* nil)
 
+(declaim (type boolean *targeting*))
+(defparameter *targeting* nil)
+
 (defun log-message (control &rest args)
   (push (apply #'format nil control args) *message-log*))
+
+(declaim (inline mouse-state-x mouse-state-y mouse-state-buttons))
+(defun mouse-state-x (mouse-state)
+  (cffi:foreign-slot-value mouse-state '(:struct al:mouse-state) 'al::x))
+(defun mouse-state-y (mouse-state)
+  (cffi:foreign-slot-value mouse-state '(:struct al:mouse-state) 'al::y))
+(defun mouse-state-buttons (mouse-state)
+  (cffi:foreign-slot-value mouse-state '(:struct al:mouse-state) 'al::buttons))
