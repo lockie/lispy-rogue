@@ -69,7 +69,7 @@
 (ui:defwindow inventory (items)
     (:title "Inventory"
      :flags (border title)
-     :x 300 :y 50 :w 400 :h 500
+     :x 280 :y 50 :w 400 :h 500
      :styles ((:item-color :window-fixed-background :r 0 :g 0 :b 0)
               (:item-color :window-header-active :r 0 :g 0 :b 0)
               (:item-color :window-header-normal :r 0 :g 0 :b 0)
