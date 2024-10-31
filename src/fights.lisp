@@ -57,14 +57,15 @@
                        target-name)))))
 
 (ecs:defsystem perform-melee-attacks
-  (:components-rw (melee attack character position)
+  (:components-rw (attack)
+   :components-ro (melee character tile)
    :enable *turn*
    :arguments ((dt single-float)))
   (incf attack-elapsed dt)
   (when (>= attack-elapsed melee-duration)
-    (with-position (target-x target-y) attack-target
-      (if (and (approx-equal position-x target-x melee-range)
-               (approx-equal position-y target-y melee-range)
+    (with-tile (target-col target-row) attack-target
+      (if (and (approx-equal tile-col target-col melee-range)
+               (approx-equal tile-row target-row melee-range)
                (has-health-p attack-target))
           (maybe-hit entity attack-target melee-accuracy
                      melee-min-damage melee-max-damage)
