@@ -28,7 +28,9 @@
    :enable (and *targeting* (not *message-log-focused*)))
   (flet ((finish-targeting (&key cancel)
            (unless cancel
-             (use-item *targeted-item* *target-x* *target-y*))
+             (if (lit *target-x* *target-y*)
+                 (use-item *targeted-item* *target-x* *target-y*)
+                 (log-message "You see nothing to aim at.")))
            (setf *targeting* nil
                  *targeted-item* -1
                  *target-x* single-float-nan
@@ -62,8 +64,8 @@
             *target-y*
             (round/tile-size (- (mouse-state-y mouse-state) (/ +tile-size+ 2))))
       (case (mouse-state-buttons mouse-state)
-        (1 (finish-targeting))
-        (2 (finish-targeting :cancel t))))
+        (1 (setf *mouse-clicked* t) (finish-targeting))
+        (2 (setf *mouse-clicked* t) (finish-targeting :cancel t))))
     (al:draw-rectangle *target-x* *target-y*
                        (+ *target-x* +tile-size+) (+ *target-y* +tile-size+)
                        +targeting-color+ 1.0)))

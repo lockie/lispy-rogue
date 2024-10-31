@@ -10,8 +10,9 @@
 (defmacro keys-down (state &rest keys)
   `(or ,@(mapcar (lambda (key) `(al:key-down ,state ,key)) keys)))
 
-(declaim (type boolean *move-key-pressed*))
+(declaim (type boolean *move-key-pressed* *mouse-clicked*))
 (defparameter *move-key-pressed* nil)
+(defparameter *mouse-clicked* nil)
 
 (ecs:defsystem control-player
   (:components-ro (player health position tile)
@@ -40,22 +41,25 @@
                 (if (plusp wait)
                     (progn
                       (log-message "You stand still.")
-                      (assign-wait entity))
+                      (assign-wait entity)
+                      (setf *turn* t))
                     (setf target-x (clamp (+ tile-col (* dx +tile-size+))
                                           0.0 (- +world-width+ +tile-size+))
                           target-y (clamp (+ tile-row (* dy +tile-size+))
                                           0.0 (- +world-height+ +tile-size+))))
-                (setf *turn* t
-                      *move-key-pressed* t)))))
+                (setf *move-key-pressed* t)))))
       (al:with-current-mouse-state mouse-state
-        (when (= 1 (mouse-state-buttons mouse-state))
-          (setf target-x (round/tile-size
-                          (- (mouse-state-x mouse-state) (/ +tile-size+ 2)))
-                target-y (round/tile-size
-                          (- (mouse-state-y mouse-state) (/ +tile-size+ 2)))
-                *turn* t)))
+        (if (= 1 (mouse-state-buttons mouse-state))
+            (unless *mouse-clicked*
+              (setf target-x (round/tile-size
+                              (- (mouse-state-x mouse-state) (/ +tile-size+ 2)))
+                    target-y (round/tile-size
+                              (- (mouse-state-y mouse-state) (/ +tile-size+ 2)))
+                    *mouse-clicked* t))
+            (setf *mouse-clicked* nil)))
       (when (and target-x target-y
                  (lit target-x target-y))
+        (setf *turn* t)
         (if-let (target-character (live-character-at target-x target-y))
           (unless (= target-character entity)
             ;; TODO check range
