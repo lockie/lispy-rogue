@@ -22,34 +22,46 @@
                 (not *targeting*))
    :after (move-characters))
   (when (plusp health-points)
-   (al:with-current-keyboard-state keyboard-state
-     (let ((dx 0) (dy 0) (wait 0))
-       ;; TODO https://roguebasin.com/index.php/Preferred_Key_Controls
-       (when (keys-down keyboard-state :up    :W :K) (setf dy -1.0))
-       (when (keys-down keyboard-state :down  :S :J) (setf dy +1.0))
-       (when (keys-down keyboard-state :left  :A :H) (setf dx -1.0))
-       (when (keys-down keyboard-state :right :D :L) (setf dx +1.0))
-       (when (keys-down keyboard-state :space :R)    (setf wait 1))
+    (let ((target-x nil) (target-y nil))
+      (al:with-current-keyboard-state keyboard-state
+        (let ((dx 0) (dy 0) (wait 0))
+          ;; TODO https://roguebasin.com/index.php/Preferred_Key_Controls
+          (when (keys-down keyboard-state :up    :W :K) (setf dy -1.0))
+          (when (keys-down keyboard-state :down  :S :J) (setf dy +1.0))
+          (when (keys-down keyboard-state :left  :A :H) (setf dx -1.0))
+          (when (keys-down keyboard-state :right :D :L) (setf dx +1.0))
+          (when (keys-down keyboard-state :space :R)    (setf wait 1))
 
-       (if (and (zerop dx) (zerop dy) (zerop wait))
-           (setf *move-key-pressed* nil)
-           (unless *move-key-pressed*
-             (when (and (zerop wait) (has-wait-p entity))
-               (delete-wait entity))
-             (if (plusp wait)
-                 (progn
-                   (log-message "You stand still.")
-                   (assign-wait entity))
-                 (let ((target-x (clamp (+ tile-col (* dx +tile-size+))
-                                        0.0 (- +world-width+ +tile-size+)))
-                       (target-y (clamp (+ tile-row (* dy +tile-size+))
-                                        0.0 (- +world-height+ +tile-size+))))
-                   (if-let (target-character (live-character-at target-x target-y))
-                     (attack entity target-character)
-                     (setf character-target-x target-x
-                           character-target-y target-y))))
-             (setf *turn* t
-                   *move-key-pressed* t)))))))
+          (if (and (zerop dx) (zerop dy) (zerop wait))
+              (setf *move-key-pressed* nil)
+              (unless *move-key-pressed*
+                (when (and (zerop wait) (has-wait-p entity))
+                  (delete-wait entity))
+                (if (plusp wait)
+                    (progn
+                      (log-message "You stand still.")
+                      (assign-wait entity))
+                    (setf target-x (clamp (+ tile-col (* dx +tile-size+))
+                                          0.0 (- +world-width+ +tile-size+))
+                          target-y (clamp (+ tile-row (* dy +tile-size+))
+                                          0.0 (- +world-height+ +tile-size+))))
+                (setf *turn* t
+                      *move-key-pressed* t)))))
+      (al:with-current-mouse-state mouse-state
+        (when (= 1 (mouse-state-buttons mouse-state))
+          (setf target-x (round/tile-size
+                          (- (mouse-state-x mouse-state) (/ +tile-size+ 2)))
+                target-y (round/tile-size
+                          (- (mouse-state-y mouse-state) (/ +tile-size+ 2)))
+                *turn* t)))
+      (when (and target-x target-y
+                 (lit target-x target-y))
+        (if-let (target-character (live-character-at target-x target-y))
+          (unless (= target-character entity)
+            ;; TODO check range
+            (attack entity target-character))
+          (setf character-target-x target-x
+                character-target-y target-y))))))
 
 (ecs:defsystem wait-turn
   (:components-ro (player)
