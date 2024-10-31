@@ -20,6 +20,7 @@
                  (:file "fov")
                  (:file "characters")
                  (:file "melee")
+                 (:file "ranged")
                  (:file "enemies")
                  (:file "fights")
                  (:file "player")

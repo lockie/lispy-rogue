@@ -71,11 +71,12 @@
   (loop :for tile :of-type ecs:entity :in (tiles (a*:encode-float-coordinates
                                                   (round/tile-size x)
                                                   (round/tile-size y)))
-        :thereis (or (and (has-map-tile-p tile)
-                          (plusp (map-tile-blocks tile)))
-                     (and (/= tile entity)
-                          (has-character-p tile)
-                          (has-health-p tile)))))
+        :when (or (and (has-map-tile-p tile)
+                       (plusp (map-tile-blocks tile)))
+                  (and (/= tile entity)
+                       (has-character-p tile)
+                       (has-health-p tile)))
+        :return tile))
 
 (defun live-character-at (x y)
   (loop :for tile :of-type ecs:entity :in (tiles (a*:encode-float-coordinates
@@ -90,8 +91,11 @@
     (let ((x (random-from-range (+ x1 +tile-size+) (- x2 +tile-size+)))
           (y (random-from-range (+ y1 +tile-size+) (- y2 +tile-size+))))
       (unless (blocked -1 x y)
-        (make-parent (make-enemy-object :goblin-warrior "the goblin" x y)
-                     :entity level))))
+        (make-parent
+         (if (zerop (random 2))
+             (make-melee-enemy-object :goblin-warrior "the goblin warrior" x y)
+             (make-ranged-enemy-object :goblin-archer "the goblin archer" x y))
+         :entity level))))
   (dotimes (_ (random (1+ +room-max-items+)))
     (let ((x (random-from-range (+ x1 +tile-size+) (- x2 +tile-size+)))
           (y (random-from-range (+ y1 +tile-size+) (- y2 +tile-size+))))

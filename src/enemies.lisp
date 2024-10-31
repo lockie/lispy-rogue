@@ -4,8 +4,12 @@
 (ecs:defcomponent enemy)
 
 (defun attack-range (entity)
-  ;; TODO ranged
-  (melee-range entity))
+  (cond
+    ((has-melee-p entity)
+     (melee-range entity))
+
+    ((has-ranged-p entity)
+     (ranged-range entity))))
 
 (ecs:defsystem chase-player
   (:components-ro (position enemy health)
@@ -29,11 +33,20 @@
          (setf character-target-x target-x
                character-target-y target-y))))))
 
-(defun make-enemy-object (sprite name x y)
+(defun make-melee-enemy-object (sprite name x y)
   (let ((object (make-sprite-object sprite x y)))
     (make-character object :name name :speed 50.0 :vision-range 100.0)
     (make-enemy object)
     (make-health object :max 20)
     (make-defense object :evasion 10.0 :dodge 15.0 :block-chance 0.1 :armor 5.0)
     (make-melee object :min-damage 5.0 :max-damage 10.0 :accuracy 25.0 :duration 0.3)
+    object))
+
+(defun make-ranged-enemy-object (sprite name x y)
+  (let ((object (make-sprite-object sprite x y)))
+    (make-character object :name name :speed 50.0 :vision-range 100.0)
+    (make-enemy object)
+    (make-health object :max 20)
+    (make-defense object :evasion 10.0 :dodge 20.0 :block-chance 0.05 :armor 1.0)
+    (make-ranged object :range 85.0 :min-damage 10.0 :max-damage 15.0 :accuracy 30.0 :duration 0.4)
     object))

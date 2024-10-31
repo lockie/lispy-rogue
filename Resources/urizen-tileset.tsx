@@ -41,6 +41,11 @@
    <property name="name" value="goblin-warrior"/>
   </properties>
  </tile>
+ <tile id="437">
+  <properties>
+   <property name="name" value="goblin-archer"/>
+  </properties>
+ </tile>
  <tile id="816">
   <properties>
    <property name="name" value="hero"/>
