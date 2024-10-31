@@ -4,6 +4,9 @@
 (ecs:defcomponent player
   (player 1 :type bit :index player-entity :unique t))
 
+(ecs:defcomponent wait
+  (elapsed 0.0 :type single-float))
+
 (defmacro keys-down (state &rest keys)
   `(or ,@(mapcar (lambda (key) `(al:key-down ,state ,key)) keys)))
 
@@ -20,30 +23,48 @@
    :after (move-characters))
   (when (plusp health-points)
    (al:with-current-keyboard-state keyboard-state
-     (let ((dx 0) (dy 0))
+     (let ((dx 0) (dy 0) (wait 0))
        ;; TODO https://roguebasin.com/index.php/Preferred_Key_Controls
        (when (keys-down keyboard-state :up    :W :K) (setf dy -1.0))
        (when (keys-down keyboard-state :down  :S :J) (setf dy +1.0))
        (when (keys-down keyboard-state :left  :A :H) (setf dx -1.0))
        (when (keys-down keyboard-state :right :D :L) (setf dx +1.0))
+       (when (keys-down keyboard-state :space :R)    (setf wait 1))
 
-       (if (and (zerop dx) (zerop dy))
+       (if (and (zerop dx) (zerop dy) (zerop wait))
            (setf *move-key-pressed* nil)
            (unless *move-key-pressed*
-             (let ((target-x (clamp (+ tile-col (* dx +tile-size+))
-                                    0.0 (- +world-width+ +tile-size+)))
-                   (target-y (clamp (+ tile-row (* dy +tile-size+))
-                                    0.0 (- +world-height+ +tile-size+))))
-               (if-let (target-character (live-character-at target-x target-y))
-                 (attack entity target-character)
-                 (setf character-target-x target-x
-                       character-target-y target-y))
-               (setf *turn* t
-                     *move-key-pressed* t))))))))
+             (when (and (zerop wait) (has-wait-p entity))
+               (delete-wait entity))
+             (if (plusp wait)
+                 (progn
+                   (log-message "You stand still.")
+                   (assign-wait entity))
+                 (let ((target-x (clamp (+ tile-col (* dx +tile-size+))
+                                        0.0 (- +world-width+ +tile-size+)))
+                       (target-y (clamp (+ tile-row (* dy +tile-size+))
+                                        0.0 (- +world-height+ +tile-size+))))
+                   (if-let (target-character (live-character-at target-x target-y))
+                     (attack entity target-character)
+                     (setf character-target-x target-x
+                           character-target-y target-y))))
+             (setf *turn* t
+                   *move-key-pressed* t)))))))
+
+(ecs:defsystem wait-turn
+  (:components-ro (player)
+   :components-rw (wait)
+   :arguments ((dt single-float))
+   :enable *turn*)
+  (incf wait-elapsed dt)
+  (when (>= wait-elapsed 1.0)
+    (delete-wait entity)
+    (setf *turn* nil)))
 
 (ecs:defsystem stop-turn
   (:components-ro (player character position)
-   :components-no (attack))
+   :components-no (attack wait)
+   :enable *turn*)
   (when (and (= position-x character-target-x)
              (= position-y character-target-y))
     (setf *turn* nil)))
