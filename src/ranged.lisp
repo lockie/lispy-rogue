@@ -1,12 +1,7 @@
 (in-package #:roguelike)
 
 
-(ecs:defcomponent ranged
-  (range 0.0 :type single-float)
-  (duration 0.0 :type single-float)
-  (accuracy 0.0 :type single-float)
-  (min-damage 0.0 :type single-float)
-  (max-damage 0.0 :type single-float))
+(ecs:defcomponent ranged)
 
 (defstruct point
   (x 0 :type fixnum)

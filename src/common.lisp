@@ -41,12 +41,27 @@
 (ecs:defcomponent character
   (name "" :type simple-string)
   (vision-range 0.0 :type single-float)
-  (speed 0.0 :type single-float)
+  (base-speed 0.0 :type single-float)
+  (speed base-speed :type single-float)
   (target-x single-float-nan :type single-float)
   (target-y single-float-nan :type single-float))
 
+(ecs:defcomponent stats
+  (base-str 0 :type fixnum)
+  (base-dex 0 :type fixnum)
+  (base-int 0 :type fixnum)
+  (str base-str :type fixnum)
+  (dex base-dex :type fixnum)
+  (int base-int :type fixnum))
+
 (ecs:defcomponent health
-  (max 0 :type fixnum)
+  (base-max 0 :type fixnum)
+  (max base-max :type fixnum)
+  (points max :type fixnum))
+
+(ecs:defcomponent mana
+  (base-max 0 :type fixnum)
+  (max base-max :type fixnum)
   (points max :type fixnum))
 
 (ecs:defcomponent attack
@@ -54,10 +69,35 @@
   (target -1 :type ecs:entity))
 
 (ecs:defcomponent defense
-  (evasion 0.0 :type single-float)
-  (dodge 0.0 :type single-float)
-  (block-chance 0.0 :type single-float)
-  (armor 0.0 :type single-float))
+  (base-evasion 0.0 :type single-float)
+  (base-block-chance 0.0 :type single-float)
+  (base-armor 0.0 :type single-float)
+  (evasion base-evasion :type single-float)
+  (block-chance base-block-chance :type single-float)
+  (armor base-armor :type single-float))
+
+(ecs:defcomponent offense
+  (range 0.0 :type single-float)
+  (base-duration 0.0 :type single-float)
+  (base-accuracy 0.0 :type single-float)
+  (base-min-damage 0.0 :type single-float)
+  (base-max-damage 0.0 :type single-float)
+  (duration base-duration :type single-float)
+  (accuracy base-accuracy :type single-float)
+  (min-damage base-min-damage :type single-float)
+  (max-damage base-max-damage :type single-float))
+
+(defmacro define-weighted-random-generator (name &rest cases)
+  `(defun ,name ()
+     (cdr (assoc (random 1.0)
+                 (load-time-value
+                  ',(loop :for (weight value) :in cases
+                          :summing weight :into total
+                          :collecting (cons total value)
+                          :finally (unless (= 1.0 total)
+                                     (error "Weights do not add up to 1")))
+                  t)
+                 :test #'<))))
 
 (declaim
  (inline approx-equal)

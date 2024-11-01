@@ -86,7 +86,13 @@
                    (has-health-p tile))
            :return tile))
 
+(define-weighted-random-generator random-item
+  (0.5 :health-potion)
+  (0.3 :fireball-scroll)
+  (0.2 :equipment))
+
 (defun place-objects (level x1 y1 x2 y2)
+  ;; TODO dont place items on same tile
   (dotimes (_ (random (1+ +room-max-monsters+)))
     (let ((x (random-from-range (+ x1 +tile-size+) (- x2 +tile-size+)))
           (y (random-from-range (+ y1 +tile-size+) (- y2 +tile-size+))))
@@ -100,10 +106,20 @@
     (let ((x (random-from-range (+ x1 +tile-size+) (- x2 +tile-size+)))
           (y (random-from-range (+ y1 +tile-size+) (- y2 +tile-size+))))
       (unless (blocked -1 x y)
-        (make-parent (if (zerop (random 2))
-                         (make-health-potion (random-from-range 5 25) x y)
-                         (make-fireball-scroll (random-from-range 15 30) x y))
-                     :entity level)))))
+        (make-parent
+         (let ((level-number (level-number level)))
+           (ecase (random-item)
+             (:health-potion
+              (make-health-potion (random-from-range (* 5  level-number)
+                                                     (* 25 level-number))
+                                  x y))
+             (:fireball-scroll
+              (make-fireball-scroll (random-from-range (* 15 level-number)
+                                                       (* 30 level-number))
+                                    x y))
+             (:equipment
+              (make-equipment-item level-number x y))))
+         :entity level)))))
 
 (defun make-room (level x1 y1 x2 y2 &key first)
   (loop

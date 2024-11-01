@@ -25,6 +25,7 @@
                  (:file "fights")
                  (:file "player")
                  (:file "items")
+                 (:file "equipment")
                  (:file "ui")
                  (:file "map")
                  (:file "targeting")

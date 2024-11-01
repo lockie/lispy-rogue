@@ -96,8 +96,14 @@
 
 (defun make-player-object (x y)
   (let ((object (make-sprite-object :hero x y)))
-    (make-character object :name "you" :speed 150.0 :vision-range 100.0)
+    (make-character object :name "you" :base-speed 150.0 :vision-range 100.0)
     (make-player object)
-    (make-health object :max 100)
-    (make-defense object :evasion 10.0 :dodge 10.0 :block-chance 0.1 :armor 10.0)
-    (make-melee object :min-damage 10.0 :max-damage 15.0 :accuracy 20.0 :duration 0.4)))
+    (make-stats object :base-str 1 :base-dex 1 :base-int 1)
+    (make-health object :base-max 100)
+    (make-mana object :base-max 20)
+    (make-defense object :base-evasion 10.0 :base-block-chance 0.2 :base-armor 10.0)
+    (make-offense object :base-min-damage 10.0 :base-max-damage 15.0 :base-accuracy 20.0 :base-duration 0.4 :range (1+ +tile-size+))
+    (make-melee object)
+    (recalculate-combat-parameters object)
+    object
+    ))

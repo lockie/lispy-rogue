@@ -49,21 +49,60 @@
 (ui:defwindow info ()
     (:x +world-width+ :y 0
      :w (- +window-width+ +world-width+) :h +window-height+
-     :styles ((:item-color :window-fixed-background :r 0 :g 0 :b 0)))
+     :styles ((:item-color :window-fixed-background :r 0 :g 0 :b 0)
+              (:item-color :edit-normal :r 0 :g 0 :b 0)
+              (:color :edit-border-color :r 0 :g 0 :b 0)))
   (ui:layout-space (:height (/ +window-height+ 2) :format :dynamic)
     (ui:layout-space-push :x 0.02 :y 0 :w 1.0 :h 0.1)
-    (with-health () (player-entity 1)
-      (ui:label (format nil "HP: ~a / ~a" points max)))
-    (al:with-current-mouse-state mouse-state
-      (when-let (description
-                 (describe-tile
-                  (- (mouse-state-x mouse-state) (/ +tile-size+ 2))
-                  (- (mouse-state-y mouse-state) (/ +tile-size+ 2))))
-        (ui:layout-space-push :x 0.02 :y 1.0 :w 1.0 :h 1.0)
-        (ui:label-wrap (format nil "You see ~a." description))))))
+    ;; TODO tooltips?
+    (let ((player (player-entity 1)))
+      (with-health () player
+        (ui:label (format nil "HP  ~3d / ~3d" points max)))
+      (ui:layout-space-push :x 0.02 :y 0.07 :w 1.0 :h 0.1)
+      (with-mana () player
+        (ui:label (format nil "MP  ~3d / ~3d" points max)))
+      (with-stats () player
+        (ui:layout-space-push :x 0.02 :y 0.14 :w 1.0 :h 0.1)
+        (ui:label (format nil "STR ~2d  DEX ~2d  INT ~2d" str dex int)))
+      (with-character () player
+        (ui:layout-space-push :x 0.02 :y 0.21 :w 1.0 :h 0.1)
+        (ui:label (format nil "movement speed ~7d" (round speed))))
+      (with-defense () player
+        (ui:layout-space-push :x 0.02 :y 0.28 :w 1.0 :h 0.1)
+        (ui:label (format nil "evasion ~14d" (round evasion)))
+        (ui:layout-space-push :x 0.02 :y 0.35 :w 1.0 :h 0.1)
+        (ui:label (format nil "block chance ~8d%" (round (* block-chance 100))))
+        (ui:layout-space-push :x 0.02 :y 0.42 :w 1.0 :h 0.1)
+        (ui:label (format nil "armor ~16d" (round armor))))
+      (with-offense () player
+        (ui:layout-space-push :x 0.02 :y 0.49 :w 1.0 :h 0.1)
+        (ui:label (format nil "attack range ~9d" (round range +tile-size+)))
+        (ui:layout-space-push :x 0.02 :y 0.56 :w 1.0 :h 0.1)
+        (ui:label (format nil "attack speed ~7,1f/s" (/ 1 duration)))
+        (ui:layout-space-push :x 0.02 :y 0.63 :w 1.0 :h 0.1)
+        (ui:label (format nil "accuracy ~13d" (round accuracy)))
+        (ui:layout-space-push :x 0.02 :y 0.70 :w 1.0 :h 0.1)
+        (ui:label (format nil "min damage ~11d" (round min-damage)))
+        (ui:layout-space-push :x 0.02 :y 0.77 :w 1.0 :h 0.1)
+        (ui:label (format nil "max damage ~11d" (round max-damage)))))
+    (ui:layout-space-push :x 0.02 :y 1.0 :w 0.9 :h 0.9)
+    (if (or *inventory-shown* *throw-window-shown*)
+        (when (ecs:entity-valid-p *hovered-item*)
+          (ui:label-wrap (format nil "You see ~a." (item-name *hovered-item*)))
+          (ui:layout-space-push :x 0.02 :y 1.15 :w 1.0 :h 1.0)
+          (ui:edit (describe-equipment *hovered-item*)
+                   :flags (:multiline :no-horizontal-scroll :read-only)))
+        (al:with-current-mouse-state mouse-state
+          (when-let (description
+                     (describe-tile
+                      (- (mouse-state-x mouse-state) (/ +tile-size+ 2))
+                      (- (mouse-state-y mouse-state) (/ +tile-size+ 2))))
+            (ui:label-wrap (format nil "You see ~a." description)))))))
 
 (define-constant +inventory-keys+ '(:1 :2 :3 :4 :5 :6 :7 :8 :9 :0 :a :b :c)
   :test #'equal)
+
+(defparameter *hovered-item* -1)
 
 (ui:defwindow inventory (title items)
     (:title title
@@ -78,11 +117,17 @@
     (cffi:with-foreign-object (selected :int (length +inventory-keys+))
       (dotimes (i (length +inventory-keys+))
         (setf (cffi:mem-aref selected :int i) 0))
-      (loop :for item :in items
+      (loop :for item :in (sort items (lambda (a b) (string< (item-name a)
+                                                        (item-name b))))
             :for key :in +inventory-keys+
             :for i :of-type fixnum :from 0
-            :do (ui:selectable-label
-                 (format nil "(~(~a~)) ~a" key (item-name item))
+            :do (ui:with-context ctx
+                  (when (plusp (the fixnum (nk:widget-is-hovered ctx)))
+                    (setf *hovered-item* item)))
+                (ui:selectable-label
+                 (format nil "(~(~a~)) ~a ~:[~;[equipped]~]" key
+                         (subseq (item-name item) 4)
+                         (has-equipped-p item))
                  (cffi:inc-pointer selected (* i (cffi:foreign-type-size :int))))
                 (when (or (plusp (cffi:mem-aref selected :int i))
                           (al:key-down keyboard-state key))
@@ -108,7 +153,8 @@
       (if (al:key-down keyboard-state :I)
           (block key-pressed
             (unless *inventory-key-pressed*
-              (setf *inventory-key-pressed* t
+              (setf *hovered-item* -1
+                    *inventory-key-pressed* t
                     *inventory-shown* (not *inventory-shown*)
                     *turn* (not *inventory-shown*))))
           (setf *inventory-key-pressed* nil))

@@ -42,14 +42,20 @@
                                              (not (ecs:entity-valid-p
                                                    (item-owner tile))))
                                   :return tile))
-                (progn (setf (item-owner item) entity
-                             (parent-entity item) entity)
-                       (log-message "You pick up ~a." (item-name item)))
+                (if (length= 13 (items entity))
+                    (log-message "You're overburdened.")
+                    (progn
+                      (setf (item-owner item) entity
+                            (parent-entity item) entity)
+                      (log-message "You pick up ~a." (item-name item))))
                 (log-message "There is nothing to pick up here."))))
           (setf *pickup-key-pressed* nil)))))
 
 (defun use-item (item x y)
   (cond
+    ((has-equipment-p item)
+     (toggle-equipped item))
+
     ((has-item-health-potion-p item)
      (let ((potion-points (item-health-potion-points item)))
        (with-health () (player-entity 1)
