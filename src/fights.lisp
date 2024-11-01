@@ -92,7 +92,7 @@
                            ranged-min-damage ranged-max-damage))))
       (log-message "The arrow from ~a sticks into the ground."
                    character-name))
-      (delete-attack entity))))
+      (delete-attack entity)))
 
 (ecs:defsystem demise-characters
   (:components-ro (health sprite)
