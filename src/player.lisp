@@ -102,7 +102,7 @@
     (make-health object :base-max 100)
     (make-mana object :base-max 20)
     (make-defense object :base-evasion 10.0 :base-block-chance 0.2 :base-armor 10.0)
-    (make-offense object :base-min-damage 10.0 :base-max-damage 15.0 :base-accuracy 20.0 :base-duration 0.4 :range (1+ +tile-size+))
+    (make-offense object :base-min-damage 10.0 :base-max-damage 15.0 :base-accuracy 20.0 :base-duration 0.4 :range (* 1.5 +tile-size+))
     (make-melee object)
     (recalculate-combat-parameters object)
     object

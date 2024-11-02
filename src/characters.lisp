@@ -1,6 +1,28 @@
 (in-package #:roguelike)
 
 
+(ecs:defcomponent path-point
+  (x 0.0 :type single-float)
+  (y 0.0 :type single-float)
+  (traveller -1 :type ecs:entity :index path-points))
+
+(ecs:defcomponent path
+  (destination-x 0.0 :type single-float)
+  (destination-y 0.0 :type single-float))
+
+(ecs:defsystem follow-path
+  (:components-ro (path position)
+   :components-rw (character)
+   :enable *turn*)
+  (if-let (first-point (first (path-points entity :count 1)))
+    (with-path-point (point-x point-y) first-point
+      (if (and (approx-equal position-x point-x)
+               (approx-equal position-y point-y))
+          (ecs:delete-entity first-point)
+          (setf character-target-x point-x
+                character-target-y point-y)))
+    (delete-path entity)))
+
 ;; TODO dont draw corpse if there's character on top?
 (ecs:defsystem draw-character-sprites
   (:components-ro (tile sprite character)
@@ -37,3 +59,36 @@
                   tile-col (round/tile-size position-x)
                   tile-row (round/tile-size position-y)
                   tile-hash (a*:encode-float-coordinates tile-col tile-row))))))
+
+(a*:define-path-finder find-path (entity)
+    (:variables ((world-width  (floor +world-width+  +tile-size+))
+                 (world-height (floor +world-height+ +tile-size+)))
+     :world-size (* world-width world-height)
+     :indexer (a*:make-row-major-indexer world-width :node-width  +tile-size+
+                                                     :node-height +tile-size+)
+     :goal-reached-p a*:goal-reached-exact-p
+     :neighbour-enumerator (a*:make-8-directions-enumerator
+                            :node-width  +tile-size+
+                            :node-height +tile-size+
+                            :max-x +world-width+
+                            :max-y +world-height+)
+     :exact-cost (lambda (x1 y1 x2 y2)
+                   (if (or (blocked entity x2 y2)
+                           (and (/= x1 x2)
+                                (/= y1 y2)
+                                (or (blocked entity x1 y2)
+                                    (blocked entity x2 y1))))
+                       most-positive-single-float
+                       0.0))
+     :heuristic-cost (a*:make-octile-distance-heuristic)
+     :path-initiator (lambda (length)
+                       (declare (ignorable length))
+                       (when (has-path-p entity)
+                         (dolist (point (path-points entity))
+                           (ecs:delete-entity point)))
+                       (assign-path entity :destination-x goal-x
+                                           :destination-y goal-y))
+     :path-processor (lambda (x y)
+                       (ecs:make-object
+                        `((:path-point :x ,x :y ,y :traveller ,entity)
+                          (:parent :entity ,entity))))))

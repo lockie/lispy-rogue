@@ -76,7 +76,7 @@
         (ui:label (format nil "armor ~16d" (round armor))))
       (with-offense () player
         (ui:layout-space-push :x 0.02 :y 0.49 :w 1.0 :h 0.1)
-        (ui:label (format nil "attack range ~9d" (round range +tile-size+)))
+        (ui:label (format nil "attack range ~9d" (floor range +tile-size+)))
         (ui:layout-space-push :x 0.02 :y 0.56 :w 1.0 :h 0.1)
         (ui:label (format nil "attack speed ~7,1f/s" (/ 1 duration)))
         (ui:layout-space-push :x 0.02 :y 0.63 :w 1.0 :h 0.1)
