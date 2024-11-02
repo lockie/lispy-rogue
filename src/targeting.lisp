@@ -25,7 +25,7 @@
 (ecs:defsystem do-targeting
   (:components-ro (player)
    :after (draw-character-sprites draw-item-sprites draw-fow)
-   :enable (and *targeting* (not *message-log-focused*)))
+   :enable (and *targeting* (not *message-log-focused*) (not *help-shown*)))
   (flet ((finish-targeting (&key cancel)
            (unless cancel
              (if (lit *target-x* *target-y*)

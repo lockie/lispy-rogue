@@ -28,6 +28,7 @@
    :enable (and (not *message-log-focused*)
                 (not *inventory-shown*)
                 (not *targeting*)
+                (not *help-shown*)
                 (not *won*)))
   (when (plusp health-points)
     (al:with-current-keyboard-state keyboard-state

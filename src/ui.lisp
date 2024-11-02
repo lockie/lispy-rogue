@@ -147,6 +147,7 @@
    :enable (and (not *message-log-focused*)
                 (not *throw-window-shown*)
                 (not *targeting*)
+                (not *help-shown*)
                 (not *won*))
    :arguments ((ui-context cffi:foreign-pointer)))
   (when (plusp health-points)
@@ -174,6 +175,7 @@
    :enable (and (not *message-log-focused*)
                 (not *inventory-shown*)
                 (not *targeting*)
+                (not *help-shown*)
                 (not *won*))
    :arguments ((ui-context cffi:foreign-pointer)))
   (when (plusp health-points)
@@ -212,3 +214,61 @@
   (ui:layout-space (:height (/ +window-height+ 2) :format :dynamic)
     (ui:layout-space-push :x 0.1 :y 0.1 :w 0.97 :h 0.1)
     (ui:label "You beat the game! Now you are a true lispy rogue ^_^")))
+
+(define-constant +help-text+
+  '("Beat the game by descending to level 11 without dying."
+    ""
+    "                                            CONTROLS"
+    "q w e    y k u    7 8 9"
+    " \\|/      \\|/      \\|/"
+    "a- -d    h- -l    4- -6"
+    " /|\\      /|\\      /|\\"
+    "z s c    b j n    1 2 3"
+    ""
+    "Use any of WASD, vi-keys, numpad or just arrows for movement."
+    ""
+    "f         start targeting ranged weapon (use the movement keys above to move the target)"
+    "f, enter  pick a target when in targeting mode"
+    ">         move down the stairs"
+    "g         grab the item from the floor"
+    "i         show inventory window (use items by pressing correspoding keys 0..9, a, b, c)"
+    "t         select an item to throw away (same)"
+    "r, space  skip turn"
+    "f1, ?     bring up this handy window"
+    "escape    cancel current window or targeting mode")
+  :test #'equal)
+
+(ui:defwindow help ()
+    (:title "HELP"
+     :flags (border title)
+     :x 0 :y 0 :w +window-width+ :h +window-height+
+     :styles ((:vec2 :window-header-label-padding :x 615 :y 20)
+              (:item-color :window-fixed-background :r 0 :g 0 :b 0)
+              (:item-color :window-header-active :r 0 :g 0 :b 0)
+              (:item-color :window-header-normal :r 0 :g 0 :b 0)))
+  (ui:layout-space (:height +ui-font-size+ :format :dynamic)
+    (loop :for string :of-type simple-string :in +help-text+
+          :for i :from 0
+          :do (ui:layout-space-push :x 0.02 :y i :w 1.0 :h 1.0)
+              (ui:label string))))
+
+(declaim (type boolean *help-key-pressed* *help-shown*))
+(defparameter *help-key-pressed* nil)
+(defparameter *help-shown* t)
+
+(ecs:defsystem show-help
+  (:components-ro (player)
+   :enable (not *won*)
+   :arguments ((ui-context cffi:foreign-pointer)))
+  (al:with-current-keyboard-state keyboard-state
+    (if (keys-down keyboard-state :F1 :slash)
+        (unless *help-key-pressed*
+          (setf *help-key-pressed* t
+                *help-shown* (not *help-shown*))
+          (when *help-shown*
+            (setf *turn* nil)))
+        (setf *help-key-pressed* nil))
+    (when (and *help-shown* (al:key-down keyboard-state :escape))
+      (setf *help-shown* nil))
+    (when *help-shown*
+      (help ui-context))))

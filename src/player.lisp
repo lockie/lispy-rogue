@@ -21,6 +21,7 @@
                 (not *inventory-shown*)
                 (not *throw-window-shown*)
                 (not *targeting*)
+                (not *help-shown*)
                 (not *won*))
    :after (move-characters))
   (when (plusp health-points)
@@ -102,6 +103,7 @@
                 (not *inventory-shown*)
                 (not *throw-window-shown*)
                 (not *targeting*)
+                (not *help-shown*)
                 (not *won*))
    :when (plusp health-points))
   (al:with-current-keyboard-state keyboard-state
