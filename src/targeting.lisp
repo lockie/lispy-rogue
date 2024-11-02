@@ -37,11 +37,11 @@
                  *target-y* single-float-nan)
            (return-from ecs:current-entity)))
     (al:with-current-keyboard-state keyboard-state
-      (let ((dx 0) (dy 0))
+      (let ((dx 0) (dy 0) (finish nil) (cancel nil))
         (when (keys-down keyboard-state :enter :F)
-          (finish-targeting))
+          (setf finish t))
         (when (keys-down keyboard-state :escape)
-          (finish-targeting :cancel t))
+          (setf cancel t))
         (when (keys-down keyboard-state :up    :W :K :pad-8) (setf dy -1.0))
         (when (keys-down keyboard-state :down  :S :J :pad-2) (setf dy +1.0))
         (when (keys-down keyboard-state :left  :A :H :pad-4) (setf dx -1.0))
@@ -50,7 +50,7 @@
         (when (keys-down keyboard-state :E :U :pad-9) (setf dx +1.0 dy -1.0))
         (when (keys-down keyboard-state :Z :B :pad-1) (setf dx -1.0 dy +1.0))
         (when (keys-down keyboard-state :C :N :pad-3) (setf dx +1.0 dy +1.0))
-        (if (and (zerop dx) (zerop dy))
+        (if (and (zerop dx) (zerop dy) (not finish) (not cancel))
             (setf *targeting-key-pressed* nil)
             (unless *targeting-key-pressed*
               (setf  *target-x* (clamp (+ *target-x* (* dx +tile-size+))
@@ -60,7 +60,11 @@
                      *targeting-key-pressed* t)
               (al:set-mouse-xy (al:get-current-display)
                                (floor (+ *target-x* (/ +tile-size+ 2)))
-                               (floor (+ *target-y* (/ +tile-size+ 2))))))))
+                               (floor (+ *target-y* (/ +tile-size+ 2))))
+              (when finish
+                (finish-targeting))
+              (when cancel
+                (finish-targeting :cancel t))))))
     (al:with-current-mouse-state mouse-state
       (setf *target-x*
             (round/tile-size (- (mouse-state-x mouse-state) (/ +tile-size+ 2)))

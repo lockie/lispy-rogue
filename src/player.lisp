@@ -15,7 +15,7 @@
 (defparameter *mouse-clicked* nil)
 
 (ecs:defsystem control-player
-  (:components-ro (player health position tile)
+  (:components-ro (player health offense position tile)
    :components-rw (character)
    :enable (and (not *message-log-focused*)
                 (not *inventory-shown*)
@@ -65,10 +65,31 @@
         (setf *turn* t)
         (if-let (target-character (live-character-at target-x target-y))
           (unless (= target-character entity)
-            ;; TODO check range
-            (attack entity target-character))
+            (if (and (approx-equal target-x tile-col offense-range)
+                     (approx-equal target-y tile-row offense-range))
+                (attack entity target-character)
+                (log-message "~@(~a~) is too far away for an attack."
+                             (character-name target-character))))
           (setf character-target-x target-x
                 character-target-y target-y))))))
+
+(declaim (type boolean *fire-key-pressed*))
+(defparameter *fire-key-pressed* nil)
+
+(ecs:defsystem target-ranged
+  (:components-ro (player ranged health)
+   :enable (and (not *message-log-focused*)
+                (not *inventory-shown*)
+                (not *throw-window-shown*)
+                (not *targeting*))
+   :when (plusp health-points))
+  (al:with-current-keyboard-state keyboard-state
+    (if (al:key-down keyboard-state :F)
+        (unless *fire-key-pressed*
+          (setf *fire-key-pressed* t
+                *targeting-key-pressed* t)
+          (start-targeting (equipped :weapon)))
+        (setf *fire-key-pressed* nil))))
 
 (ecs:defsystem wait-turn
   (:components-ro (player)

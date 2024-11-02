@@ -6,6 +6,7 @@
   :test #'equal)
 
 (ecs:defcomponent equipment
+  (type :|| :type keyword)
   (slot :|| :type keyword))
 
 (ecs:defcomponent equipped
@@ -81,6 +82,20 @@
                            (* (+ ,base-value flat) mult)))))
 
 (defun recalculate-combat-parameters (character)
+  (let ((equipped-weapon (equipped :weapon :missing-error-p nil)))
+    (cond ((not (and (ecs:entity-valid-p equipped-weapon)
+                     (find (equipment-type equipped-weapon)
+                           '(:bow :wand :staff) :test #'eq)))
+           (when (has-ranged-p character)
+             (delete-ranged character))
+           (assign-melee character)
+           (setf (offense-range character) (* 1.5 +tile-size+)))
+
+          (t
+           (when (has-melee-p character)
+             (delete-melee character))
+           (assign-ranged character)
+           (setf (offense-range character) 100.0))))
   (let ((items (items character)))
     (with-stats () character
       (setf str (scale-parameter/items str base-str :int t)
@@ -165,7 +180,8 @@
                   x y)))
     (make-item object :name (format nil "the ~(~a~) ~(~a~)" grade
                                     (if (eq slot :weapon) weapon-type slot)))
-    (make-equipment object :slot slot)
+    (make-equipment object :slot slot
+                           :type (if (eq slot :weapon) weapon-type slot))
     (make-bonus object)
     (with-bonus () object
       ;; base characteristic

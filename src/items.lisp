@@ -52,34 +52,45 @@
           (setf *pickup-key-pressed* nil)))))
 
 (defun use-item (item x y)
-  (cond
-    ((has-equipment-p item)
-     (toggle-equipped item))
+  (let ((player (player-entity 1)))
+    (when (has-attack-p player)
+      (delete-attack player))
+    (cond
+      ((and (has-equipped-p item)
+          (has-ranged-p player) x y)
+     (if-let (target-character (live-character-at x y))
+       (progn
+         (attack player target-character)
+         (setf *turn* t))
+       (log-message "You see nothing to shoot at.")))
 
-    ((has-item-health-potion-p item)
-     (let ((potion-points (item-health-potion-points item)))
-       (with-health () (player-entity 1)
-         (if (= points max)
-             (log-message "You are already at full health.")
-             (block do-drink
-               (setf points (min (+ points potion-points) max))
-               (ecs:delete-entity item)
-               (log-message "You drink health potion, restoring ~a points."
-                            potion-points))))))
+      ((has-equipment-p item)
+       (toggle-equipped item))
 
-    ((has-item-fireball-scroll-p item)
-     (if (and x y)
-         (loop :initially (log-message "The fireball explodes.")
-               :with damage := (item-fireball-scroll-damage item)
-               :for character :in (area-damage x y damage)
-               :do (log-message "~@(~a~) ~a burned for ~a damage."
-                                (character-name character)
-                                (verb "get" character) damage)
-               :finally (ecs:delete-entity item))
-         (start-targeting item)))
+      ((has-item-health-potion-p item)
+       (let ((potion-points (item-health-potion-points item)))
+         (with-health () player
+           (if (= points max)
+               (log-message "You are already at full health.")
+               (block do-drink
+                 (setf points (min (+ points potion-points) max))
+                 (ecs:delete-entity item)
+                 (log-message "You drink health potion, restoring ~a points."
+                              potion-points))))))
 
-    (t
-     (log-message "You don't know how to use ~a." (item-name item)))))
+      ((has-item-fireball-scroll-p item)
+       (if (and x y)
+           (loop :initially (log-message "The fireball explodes.")
+                 :with damage := (item-fireball-scroll-damage item)
+                 :for character :in (area-damage x y damage)
+                 :do (log-message "~@(~a~) ~a burned for ~a damage."
+                                  (character-name character)
+                                  (verb "get" character) damage)
+                 :finally (ecs:delete-entity item))
+           (start-targeting item)))
+
+      (t
+       (log-message "You don't know how to use ~a." (item-name item))))))
 
 (defun make-health-potion (points x y)
   (let ((object (make-sprite-object :health-potion x y)))
