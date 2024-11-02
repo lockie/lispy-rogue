@@ -144,9 +144,10 @@
 
     (t (concatenate 'string infinitive "s"))))
 
-(declaim (type boolean *turn* *should-quit*))
+(declaim (type boolean *turn* *should-quit* *won*))
 (defvar *turn* nil)
 (defvar *should-quit*)
+(defvar *won* nil)
 
 (declaim (type list *message-log*))
 (defparameter *message-log* nil)

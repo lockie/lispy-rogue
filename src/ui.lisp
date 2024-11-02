@@ -146,7 +146,8 @@
   (:components-ro (player health)
    :enable (and (not *message-log-focused*)
                 (not *throw-window-shown*)
-                (not *targeting*))
+                (not *targeting*)
+                (not *won*))
    :arguments ((ui-context cffi:foreign-pointer)))
   (when (plusp health-points)
     (al:with-current-keyboard-state keyboard-state
@@ -172,7 +173,8 @@
   (:components-ro (player health position tile)
    :enable (and (not *message-log-focused*)
                 (not *inventory-shown*)
-                (not *targeting*))
+                (not *targeting*)
+                (not *won*))
    :arguments ((ui-context cffi:foreign-pointer)))
   (when (plusp health-points)
     (al:with-current-keyboard-state keyboard-state
@@ -198,3 +200,15 @@
                 (tile-hash selected-item) tile-hash)
           (setf *throw-window-shown* nil
                 *turn* t))))))
+
+(ui:defwindow congratulations ()
+    (:title "Congratulations!"
+     :flags (border title)
+     :x 0 :y 0 :w +window-width+ :h +window-height+
+     :styles ((:vec2 :window-header-label-padding :x 540 :y 20)
+              (:item-color :window-fixed-background :r 0 :g 0 :b 0)
+              (:item-color :window-header-active :r 0 :g 0 :b 0)
+              (:item-color :window-header-normal :r 0 :g 0 :b 0)))
+  (ui:layout-space (:height (/ +window-height+ 2) :format :dynamic)
+    (ui:layout-space-push :x 0.1 :y 0.1 :w 0.97 :h 0.1)
+    (ui:label "You beat the game! Now you are a true lispy rogue ^_^")))

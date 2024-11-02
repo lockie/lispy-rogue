@@ -33,9 +33,12 @@
 (defun update (dt ui-context)
   (unless (zerop dt)
     (setf *fps* (round 1 dt)))
-  (message-log ui-context)
-  (info ui-context)
-  (ecs:run-systems :dt (float dt 0.0) :ui-context ui-context))
+  (if *won*
+    (congratulations ui-context)
+    (progn
+      (message-log ui-context)
+      (info ui-context)
+      (ecs:run-systems :dt (float dt 0.0) :ui-context ui-context))))
 
 (defvar *font*)
 

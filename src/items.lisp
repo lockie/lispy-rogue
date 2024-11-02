@@ -27,7 +27,8 @@
   (:components-ro (player health tile)
    :enable (and (not *message-log-focused*)
                 (not *inventory-shown*)
-                (not *targeting*)))
+                (not *targeting*)
+                (not *won*)))
   (when (plusp health-points)
     (al:with-current-keyboard-state keyboard-state
       (if (keys-down keyboard-state :G :comma)

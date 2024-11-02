@@ -226,7 +226,8 @@
    :enable (and (not *message-log-focused*)
                 (not *inventory-shown*)
                 (not *throw-window-shown*)
-                (not *targeting*)))
+                (not *targeting*)
+                (not *won*)))
   (when (plusp health-points)
     (al:with-current-keyboard-state keyboard-state
       (if (and (al:key-down keyboard-state :fullstop)
@@ -239,6 +240,10 @@
               (with-stairs () stairs
                 (let* ((current-level-number (level-number current-level))
                        (new-level (1+ current-level-number)))
+                  (when (= new-level 11)
+                    (setf *won* t
+                          *turn* nil)
+                    (return-from ecs:current-entity))
                   (ecs:delete-entity current-level)
                   (make-map new-level)
                   (log-message "You descend to the ~:r level." new-level)))
