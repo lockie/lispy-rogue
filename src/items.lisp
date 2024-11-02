@@ -44,7 +44,7 @@
                                              (not (ecs:entity-valid-p
                                                    (item-owner tile))))
                                   :return tile))
-                (if (length= 13 (items entity))
+                (if (length= +inventory-keys+ (items entity))
                     (log-message "You're overburdened.")
                     (progn
                       (setf (item-owner item) entity
