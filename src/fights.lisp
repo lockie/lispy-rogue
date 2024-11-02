@@ -93,7 +93,10 @@
 (ecs:defsystem demise-characters
   (:components-ro (health sprite)
    :components-rw (character)
+   :with (player :of-type ecs:entity := (player-entity 1))
    :when (not (plusp health-points)))
+  (when (= entity player)
+    (setf *turn* nil))
   (log-message "~@(~a~) ~a." character-name (verb "die" entity))
   (delete-health entity)
   (when (has-attack-p entity)
