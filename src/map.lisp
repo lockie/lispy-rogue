@@ -223,33 +223,33 @@
 
 (ecs:defsystem switch-level
   (:components-ro (player health tile)
+   :when (plusp health-points)
    :enable (and (not *message-log-focused*)
                 (not *inventory-shown*)
                 (not *throw-window-shown*)
                 (not *targeting*)
                 (not *help-shown*)
                 (not *won*)))
-  (when (plusp health-points)
-    (al:with-current-keyboard-state keyboard-state
-      (if (and (al:key-down keyboard-state :fullstop)
-               (or (al:key-down keyboard-state :lshift)
-                   (al:key-down keyboard-state :rshift)))
-          (unless *stairs-key-pressed*
-            (if-let (stairs (find-if #'has-stairs-p
-                                     (tiles (a*:encode-float-coordinates
-                                             tile-col tile-row))))
-              (with-stairs () stairs
-                (let* ((current-level-number (level-number current-level))
-                       (new-level (1+ current-level-number)))
-                  (when (= new-level 11)
-                    (setf *won* t
-                          *turn* nil)
-                    (return-from ecs:current-entity))
-                  (ecs:delete-entity current-level)
-                  (make-map new-level)
-                  (setf *message-log* nil)
-                  (log-message "You descend to the ~:r level." new-level)))
-              (log-message "There is no stairs here."))
-            (setf *turn* nil
-                  *stairs-key-pressed* t))
-          (setf *stairs-key-pressed* nil)))))
+  (al:with-current-keyboard-state keyboard-state
+    (if (and (al:key-down keyboard-state :fullstop)
+             (or (al:key-down keyboard-state :lshift)
+                 (al:key-down keyboard-state :rshift)))
+        (unless *stairs-key-pressed*
+          (if-let (stairs (find-if #'has-stairs-p
+                                   (tiles (a*:encode-float-coordinates
+                                           tile-col tile-row))))
+            (with-stairs () stairs
+              (let* ((current-level-number (level-number current-level))
+                     (new-level (1+ current-level-number)))
+                (when (= new-level 11)
+                  (setf *won* t
+                        *turn* nil)
+                  (return-from ecs:current-entity))
+                (ecs:delete-entity current-level)
+                (make-map new-level)
+                (setf *message-log* nil)
+                (log-message "You descend to the ~:r level." new-level)))
+            (log-message "There is no stairs here."))
+          (setf *turn* nil
+                *stairs-key-pressed* t))
+        (setf *stairs-key-pressed* nil))))

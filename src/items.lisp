@@ -25,33 +25,33 @@
 
 (ecs:defsystem pick-item
   (:components-ro (player health tile)
+   :when (plusp health-points)
    :enable (and (not *message-log-focused*)
                 (not *inventory-shown*)
                 (not *targeting*)
                 (not *help-shown*)
                 (not *won*)))
-  (when (plusp health-points)
-    (al:with-current-keyboard-state keyboard-state
-      (if (keys-down keyboard-state :G :comma)
-          (block key-pressed
-            (unless *pickup-key-pressed*
-              (setf *pickup-key-pressed* t)
-              (if-let (item (loop :for tile
-                                  :in (tiles
-                                       (a*:encode-float-coordinates tile-col
-                                                                    tile-row))
-                                  :when (and (has-item-p tile)
-                                             (not (ecs:entity-valid-p
-                                                   (item-owner tile))))
-                                  :return tile))
-                (if (length= +inventory-keys+ (items entity))
-                    (log-message "You're overburdened.")
-                    (progn
-                      (setf (item-owner item) entity
-                            (parent-entity item) entity)
-                      (log-message "You pick up ~a." (item-name item))))
-                (log-message "There is nothing to pick up here."))))
-          (setf *pickup-key-pressed* nil)))))
+  (al:with-current-keyboard-state keyboard-state
+    (if (keys-down keyboard-state :G :comma)
+        (block key-pressed
+          (unless *pickup-key-pressed*
+            (setf *pickup-key-pressed* t)
+            (if-let (item (loop :for tile
+                                :in (tiles
+                                     (a*:encode-float-coordinates tile-col
+                                                                  tile-row))
+                                :when (and (has-item-p tile)
+                                           (not (ecs:entity-valid-p
+                                                 (item-owner tile))))
+                                :return tile))
+              (if (length= +inventory-keys+ (items entity))
+                  (log-message "You're overburdened.")
+                  (progn
+                    (setf (item-owner item) entity
+                          (parent-entity item) entity)
+                    (log-message "You pick up ~a." (item-name item))))
+              (log-message "There is nothing to pick up here."))))
+        (setf *pickup-key-pressed* nil))))
 
 (defun use-item (item x y)
   (let ((player (player-entity 1)))

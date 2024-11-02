@@ -144,62 +144,62 @@
 
 (ecs:defsystem rummage-inventory
   (:components-ro (player health)
+   :when (plusp health-points)
    :enable (and (not *message-log-focused*)
                 (not *throw-window-shown*)
                 (not *targeting*)
                 (not *help-shown*)
                 (not *won*))
    :arguments ((ui-context cffi:foreign-pointer)))
-  (when (plusp health-points)
-    (al:with-current-keyboard-state keyboard-state
-      (if (al:key-down keyboard-state :I)
-          (unless *inventory-key-pressed*
-            (setf *hovered-item* -1
-                  *inventory-key-pressed* t
-                  *inventory-shown* (not *inventory-shown*)
-                  *turn* (not *inventory-shown*)))
-          (setf *inventory-key-pressed* nil))
-      (when (and *inventory-shown* (al:key-down keyboard-state :escape))
-        (setf *inventory-shown* nil
-              *turn* t)))
-    (when *inventory-shown*
-      (when-let (selected-item
-                 (inventory ui-context "Inventory" (items entity)))
-        (use-item selected-item nil nil)
-        (setf *inventory-shown* nil
-              *turn* t)))))
+  (al:with-current-keyboard-state keyboard-state
+    (if (al:key-down keyboard-state :I)
+        (unless *inventory-key-pressed*
+          (setf *hovered-item* -1
+                *inventory-key-pressed* t
+                *inventory-shown* (not *inventory-shown*)
+                *turn* (not *inventory-shown*)))
+        (setf *inventory-key-pressed* nil))
+    (when (and *inventory-shown* (al:key-down keyboard-state :escape))
+      (setf *inventory-shown* nil
+            *turn* t)))
+  (when *inventory-shown*
+    (when-let (selected-item
+               (inventory ui-context "Inventory" (items entity)))
+      (use-item selected-item nil nil)
+      (setf *inventory-shown* nil
+            *turn* t))))
 
 (ecs:defsystem throw-away-item
   (:components-ro (player health position tile)
+   :when (plusp health-points)
    :enable (and (not *message-log-focused*)
                 (not *inventory-shown*)
                 (not *targeting*)
                 (not *help-shown*)
                 (not *won*))
    :arguments ((ui-context cffi:foreign-pointer)))
-  (when (plusp health-points)
-    (al:with-current-keyboard-state keyboard-state
-      (if (al:key-down keyboard-state :T)
-          (unless *throw-key-pressed*
-            (setf *throw-key-pressed* t
-                  *throw-window-shown* (not *throw-window-shown*)
-                  *turn* (not *throw-window-shown*)))
-          (setf *throw-key-pressed* nil))
-      (when (and *throw-window-shown* (al:key-down keyboard-state :escape))
+  (al:with-current-keyboard-state keyboard-state
+    (if (al:key-down keyboard-state :T)
+        (unless *throw-key-pressed*
+          (setf *throw-key-pressed* t
+                *throw-window-shown* (not *throw-window-shown*)
+                *turn* (not *throw-window-shown*)))
+        (setf *throw-key-pressed* nil))
+    (when (and *throw-window-shown* (al:key-down keyboard-state :escape))
+      (setf *throw-window-shown* nil
+            *turn* t))
+    (when *throw-window-shown*
+      (when-let (selected-item
+                 (inventory ui-context "Throw away item" (items entity)))
+        (log-message "You throw away ~a." (item-name selected-item))
+        (setf (item-owner selected-item) -1
+              (position-x selected-item) position-x
+              (position-y selected-item) position-y
+              (tile-col  selected-item) tile-col
+              (tile-row  selected-item) tile-row
+              (tile-hash selected-item) tile-hash)
         (setf *throw-window-shown* nil
-              *turn* t))
-      (when *throw-window-shown*
-        (when-let (selected-item
-                   (inventory ui-context "Throw away item" (items entity)))
-          (log-message "You throw away ~a." (item-name selected-item))
-          (setf (item-owner selected-item) -1
-                (position-x selected-item) position-x
-                (position-y selected-item) position-y
-                (tile-col  selected-item) tile-col
-                (tile-row  selected-item) tile-row
-                (tile-hash selected-item) tile-hash)
-          (setf *throw-window-shown* nil
-                *turn* t))))))
+              *turn* t)))))
 
 (ui:defwindow congratulations ()
     (:title "Congratulations!"
