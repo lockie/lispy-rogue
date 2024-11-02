@@ -153,12 +153,11 @@
   (when (plusp health-points)
     (al:with-current-keyboard-state keyboard-state
       (if (al:key-down keyboard-state :I)
-          (block key-pressed
-            (unless *inventory-key-pressed*
-              (setf *hovered-item* -1
-                    *inventory-key-pressed* t
-                    *inventory-shown* (not *inventory-shown*)
-                    *turn* (not *inventory-shown*))))
+          (unless *inventory-key-pressed*
+            (setf *hovered-item* -1
+                  *inventory-key-pressed* t
+                  *inventory-shown* (not *inventory-shown*)
+                  *turn* (not *inventory-shown*)))
           (setf *inventory-key-pressed* nil))
       (when (and *inventory-shown* (al:key-down keyboard-state :escape))
         (setf *inventory-shown* nil
@@ -181,11 +180,10 @@
   (when (plusp health-points)
     (al:with-current-keyboard-state keyboard-state
       (if (al:key-down keyboard-state :T)
-          (block key-pressed
-            (unless *throw-key-pressed*
-              (setf *throw-key-pressed* t
-                    *throw-window-shown* (not *throw-window-shown*)
-                    *turn* (not *throw-window-shown*))))
+          (unless *throw-key-pressed*
+            (setf *throw-key-pressed* t
+                  *throw-window-shown* (not *throw-window-shown*)
+                  *turn* (not *throw-window-shown*)))
           (setf *throw-key-pressed* nil))
       (when (and *throw-window-shown* (al:key-down keyboard-state :escape))
         (setf *throw-window-shown* nil
