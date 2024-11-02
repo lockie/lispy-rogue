@@ -60,7 +60,7 @@
                   tile-row (round/tile-size position-y)
                   tile-hash (a*:encode-float-coordinates tile-col tile-row))))))
 
-(a*:define-path-finder find-path (entity)
+(a*:define-path-finder find-path (entity player)
     (:variables ((world-width  (floor +world-width+  +tile-size+))
                  (world-height (floor +world-height+ +tile-size+)))
      :world-size (* world-width world-height)
@@ -73,11 +73,11 @@
                             :max-x +world-width+
                             :max-y +world-height+)
      :exact-cost (lambda (x1 y1 x2 y2)
-                   (if (or (blocked entity x2 y2)
+                   (if (or (blocked player x2 y2)
                            (and (/= x1 x2)
                                 (/= y1 y2)
-                                (or (blocked entity x1 y2)
-                                    (blocked entity x2 y1))))
+                                (or (blocked player x1 y2)
+                                    (blocked player x2 y1))))
                        most-positive-single-float
                        0.0))
      :heuristic-cost (a*:make-octile-distance-heuristic)

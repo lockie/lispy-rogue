@@ -27,7 +27,11 @@
        (let+ (((&values target-x target-y)
                ;; TODO check LoS for ranged?
                (nearest-tile tile-col tile-row player-col player-row)))
-           (find-path tile-col tile-row target-x target-y :entity entity))))))
+         (when (blocked entity target-x target-y)
+           (setf target-x player-col
+                 target-y player-row))
+         (find-path tile-col tile-row target-x target-y
+                    :entity entity :player player))))))
 
 (defun make-melee-enemy-object (sprite name x y)
   (let ((object (make-sprite-object sprite x y)))
