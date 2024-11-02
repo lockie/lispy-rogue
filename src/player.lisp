@@ -2,6 +2,8 @@
 
 
 (ecs:defcomponent player
+  (xp 0 :type fixnum)
+  (level 1 :type fixnum)
   (player 1 :type bit :index player-entity :unique t))
 
 (ecs:defcomponent wait
@@ -22,6 +24,7 @@
                 (not *inventory-shown*)
                 (not *throw-window-shown*)
                 (not *targeting*)
+                (not *levelup-shown*)
                 (not *help-shown*)
                 (not *won*))
    :after (move-characters))
@@ -156,3 +159,31 @@
     (recalculate-combat-parameters object)
     object
     ))
+
+(define-constant +levelup-base+ 0)
+(define-constant +levelup-factor+ 20)
+
+(ecs:defsystem level-up
+  (:components-ro (health)
+   :components-rw (player)
+   :when (plusp health-points))
+  (when (> player-xp (+ +levelup-base+ (* player-level +levelup-factor+)))
+    (incf player-level)
+    (log-message "You reach level ~a." player-level)
+    (setf *turn* nil
+          *levelup-shown* t)))
+
+(ecs:defsystem do-levelup
+  (:components-ro (player health)
+   :components-rw (stats)
+   :when (plusp health-points)
+   :enable *levelup-shown*
+   :arguments ((ui-context cffi:foreign-pointer)))
+  (when-let (stat (levelup ui-context))
+    (format t "picked stat ~a~%" stat)
+    (setf *levelup-shown* nil)
+    (case stat
+      (0 (incf stats-base-str))
+      (1 (incf stats-base-dex))
+      (2 (incf stats-base-int)))
+    (recalculate-combat-parameters entity)))

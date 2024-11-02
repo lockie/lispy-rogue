@@ -228,6 +228,7 @@
                 (not *inventory-shown*)
                 (not *throw-window-shown*)
                 (not *targeting*)
+                (not *levelup-shown*)
                 (not *help-shown*)
                 (not *won*)))
   (al:with-current-keyboard-state keyboard-state

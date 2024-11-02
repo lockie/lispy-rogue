@@ -1,7 +1,8 @@
 (in-package #:roguelike)
 
 
-(ecs:defcomponent enemy)
+(ecs:defcomponent enemy
+  (xp 0 :type fixnum))
 
 (ecs:defsystem chase-player
   (:components-ro (position tile enemy health offense)
@@ -36,7 +37,7 @@
 (defun make-melee-enemy-object (sprite name x y)
   (let ((object (make-sprite-object sprite x y)))
     (make-character object :name name :base-speed 50.0 :vision-range 100.0)
-    (make-enemy object)
+    (make-enemy object :xp 10)
     (make-health object :base-max 20)
     (make-defense object :base-evasion 10.0 :base-block-chance 0.1 :base-armor 5.0)
     (make-offense object :range (* 1.5 +tile-size+) :min-damage 5.0 :max-damage 10.0 :accuracy 25.0 :duration 0.3)
@@ -46,7 +47,7 @@
 (defun make-ranged-enemy-object (sprite name x y)
   (let ((object (make-sprite-object sprite x y)))
     (make-character object :name name :base-speed 50.0 :vision-range 100.0)
-    (make-enemy object)
+    (make-enemy object :xp 20)
     (make-health object :base-max 20)
     (make-defense object :base-evasion 10.0 :base-block-chance 0.05 :base-armor 1.0)
     (make-offense object :range 85.0 :min-damage 10.0 :max-damage 15.0 :accuracy 30.0 :duration 0.6)

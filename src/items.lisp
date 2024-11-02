@@ -29,6 +29,7 @@
    :enable (and (not *message-log-focused*)
                 (not *inventory-shown*)
                 (not *targeting*)
+                (not *levelup-shown*)
                 (not *help-shown*)
                 (not *won*)))
   (al:with-current-keyboard-state keyboard-state

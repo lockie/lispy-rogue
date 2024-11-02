@@ -92,12 +92,13 @@
           (ui:layout-space-push :x 0.02 :y 1.15 :w 1.0 :h 1.0)
           (ui:edit (describe-equipment *hovered-item*)
                    :flags (:multiline :no-horizontal-scroll :read-only)))
-        (al:with-current-mouse-state mouse-state
-          (when-let (description
-                     (describe-tile
-                      (- (mouse-state-x mouse-state) (/ +tile-size+ 2))
-                      (- (mouse-state-y mouse-state) (/ +tile-size+ 2))))
-            (ui:label-wrap (format nil "You see ~a." description)))))))
+        (unless *levelup-shown*
+          (al:with-current-mouse-state mouse-state
+            (when-let (description
+                       (describe-tile
+                        (- (mouse-state-x mouse-state) (/ +tile-size+ 2))
+                        (- (mouse-state-y mouse-state) (/ +tile-size+ 2))))
+              (ui:label-wrap (format nil "You see ~a." description))))))))
 
 (define-constant +inventory-keys+ '(:1 :2 :3 :4 :5 :6 :7 :8 :9 :0 :a :b :c)
   :test #'equal)
@@ -148,6 +149,7 @@
    :enable (and (not *message-log-focused*)
                 (not *throw-window-shown*)
                 (not *targeting*)
+                (not *levelup-shown*)
                 (not *help-shown*)
                 (not *won*))
    :arguments ((ui-context cffi:foreign-pointer)))
@@ -175,6 +177,7 @@
    :enable (and (not *message-log-focused*)
                 (not *inventory-shown*)
                 (not *targeting*)
+                (not *levelup-shown*)
                 (not *help-shown*)
                 (not *won*))
    :arguments ((ui-context cffi:foreign-pointer)))
@@ -270,3 +273,39 @@
       (setf *help-shown* nil))
     (when *help-shown*
       (help ui-context))))
+
+(declaim (type boolean *levelup-shown*))
+(defparameter *levelup-shown* nil)
+
+(define-constant +stat-descriptions+
+  '("   affects HP, armor & damage"
+    "   affects evasion & accuracy"
+    "   affects mana")
+  :test #'equal)
+
+(ui:defwindow levelup ()
+    (:title "Choose stat to raise"
+     :flags (border title)
+     :x 280 :y 50 :w 400 :h 500
+     :styles ((:item-color :window-fixed-background :r 0 :g 0 :b 0)
+              (:item-color :window-header-active :r 0 :g 0 :b 0)
+              (:item-color :window-header-normal :r 0 :g 0 :b 0)
+              (:item-color :selectable-normal :r 0 :g 0 :b 0)))
+  (ui:layout-row-static :height +ui-font-size+ :item-width 375 :columns 1)
+  (al:with-current-keyboard-state keyboard-state
+    (cffi:with-foreign-object (selected :int 3)
+      (dotimes (i 3)
+        (setf (cffi:mem-aref selected :int i) 0))
+      (loop
+        :for stat :in '("STR" "DEX" "INT")
+        :for description :in +stat-descriptions+
+        :for key :in '(:1 :2 :3)
+        :for i :from 0
+        :do (ui:selectable-label
+             (format nil "(~(~a~)) ~a" key stat)
+             (cffi:inc-pointer selected (* i (cffi:foreign-type-size :int))))
+            (ui:label description)
+            (when (or (plusp (cffi:mem-aref selected :int i))
+                      (al:key-down keyboard-state key))
+              (return-from levelup i)))))
+  nil)
