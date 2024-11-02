@@ -47,10 +47,28 @@
                       (log-message "You stand still.")
                       (assign-wait entity)
                       (setf *turn* t))
-                    (setf target-x (clamp (+ tile-col (* dx +tile-size+))
-                                          0.0 (- +world-width+ +tile-size+))
-                          target-y (clamp (+ tile-row (* dy +tile-size+))
-                                          0.0 (- +world-height+ +tile-size+))))
+                    (progn
+                      (log-message "You take a step ~a."
+                                   (cond ((and (plusp  dx) (plusp  dy))
+                                          "southeast")
+                                         ((and (plusp  dx) (minusp dy))
+                                          "northeast")
+                                         ((and (minusp dx) (plusp  dy))
+                                          "southwest")
+                                         ((and (minusp dx) (minusp dy))
+                                          "northwest")
+                                         ((plusp  dx)
+                                          "east")
+                                         ((minusp dx)
+                                          "west")
+                                         ((plusp  dy)
+                                          "south")
+                                         ((minusp dy)
+                                          "north")))
+                      (setf target-x (clamp (+ tile-col (* dx +tile-size+)) 0.0
+                                            (- +world-width+ +tile-size+))
+                            target-y (clamp (+ tile-row (* dy +tile-size+)) 0.0
+                                            (- +world-height+ +tile-size+)))))
                 (setf *move-key-pressed* t)))))
       (al:with-current-mouse-state mouse-state
         (if (= 1 (mouse-state-buttons mouse-state))
@@ -59,7 +77,8 @@
                               (- (mouse-state-x mouse-state) (/ +tile-size+ 2)))
                     target-y (round/tile-size
                               (- (mouse-state-y mouse-state) (/ +tile-size+ 2)))
-                    *mouse-clicked* t))
+                    *mouse-clicked* t)
+              (log-message "You take a few steps."))
             (setf *mouse-clicked* nil)))
       (when (and target-x target-y
                  (lit target-x target-y))
