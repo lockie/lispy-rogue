@@ -85,9 +85,9 @@
                 (log-message "The arrow from ~a deflects off the wall."
                              character-name)
                 (maybe-hit entity object offense-accuracy
-                           offense-min-damage offense-max-damage))))
-      (log-message "The arrow from ~a sticks into the ground."
-                   character-name))
+                           offense-min-damage offense-max-damage)))
+          (log-message "The arrow from ~a sticks into the ground."
+                       character-name)))
     (delete-attack entity)))
 
 (ecs:defsystem demise-characters
