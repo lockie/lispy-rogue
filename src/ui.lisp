@@ -117,8 +117,8 @@
     (cffi:with-foreign-object (selected :int (length +inventory-keys+))
       (dotimes (i (length +inventory-keys+))
         (setf (cffi:mem-aref selected :int i) 0))
-      (loop :for item :in (sort items (lambda (a b) (string< (item-name a)
-                                                        (item-name b))))
+      (loop :for item :in (stable-sort items (lambda (a b) (string< (item-name a)
+                                                               (item-name b))))
             :for key :in +inventory-keys+
             :for i :of-type fixnum :from 0
             :do (ui:with-context ctx
