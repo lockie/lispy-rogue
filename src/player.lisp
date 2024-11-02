@@ -26,11 +26,14 @@
     (let ((target-x nil) (target-y nil))
       (al:with-current-keyboard-state keyboard-state
         (let ((dx 0) (dy 0) (wait 0))
-          ;; TODO https://roguebasin.com/index.php/Preferred_Key_Controls
-          (when (keys-down keyboard-state :up    :W :K) (setf dy -1.0))
-          (when (keys-down keyboard-state :down  :S :J) (setf dy +1.0))
-          (when (keys-down keyboard-state :left  :A :H) (setf dx -1.0))
-          (when (keys-down keyboard-state :right :D :L) (setf dx +1.0))
+          (when (keys-down keyboard-state :up    :W :K :pad-8) (setf dy -1.0))
+          (when (keys-down keyboard-state :down  :S :J :pad-2) (setf dy +1.0))
+          (when (keys-down keyboard-state :left  :A :H :pad-4) (setf dx -1.0))
+          (when (keys-down keyboard-state :right :D :L :pad-6) (setf dx +1.0))
+          (when (keys-down keyboard-state :Q :Y :pad-7) (setf dx -1.0 dy -1.0))
+          (when (keys-down keyboard-state :E :U :pad-9) (setf dx +1.0 dy -1.0))
+          (when (keys-down keyboard-state :Z :B :pad-1) (setf dx -1.0 dy +1.0))
+          (when (keys-down keyboard-state :C :N :pad-3) (setf dx +1.0 dy +1.0))
           (when (keys-down keyboard-state :space :R)    (setf wait 1))
 
           (if (and (zerop dx) (zerop dy) (zerop wait))
