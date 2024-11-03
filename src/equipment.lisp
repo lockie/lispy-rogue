@@ -85,7 +85,7 @@
   (let ((equipped-weapon (equipped :weapon :missing-error-p nil)))
     (cond ((not (and (ecs:entity-valid-p equipped-weapon)
                      (find (equipment-type equipped-weapon)
-                           '(:bow :wand :staff) :test #'eq)))
+                           '(:bow) :test #'eq)))
            (when (has-ranged-p character)
              (delete-ranged character))
            (assign-melee character)
@@ -150,13 +150,11 @@
   (0.05 :ring))
 
 (define-weighted-random-generator random-weapon-type
-  (0.085 :sword)
-  (0.085 :dagger)
-  (0.085 :club)
-  (0.085 :axe)
-  (0.33  :bow)
-  (0.165 :staff)
-  (0.165 :wand))
+  (0.15 :sword)
+  (0.15 :dagger)
+  (0.15 :club)
+  (0.15 :axe)
+  (0.4  :bow))
 
 (define-weighted-random-generator random-grade
   (0.8 :common)
@@ -200,7 +198,6 @@
         (:shield
          (setf block-chance-mult (random (* 0.1 ilvl))))
         (:weapon
-         ;; TODO magic
          (case weapon-type
            ((:sword :club :axe)
             (setf min-dmg-flat (1+ (random (* 10 ilvl)))
