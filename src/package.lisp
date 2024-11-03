@@ -1,4 +1,4 @@
-(defpackage #:roguelike
+(defpackage #:lispy-rogue
   (:use #:cl #:let-plus)
   (:import-from #:alexandria #:clamp #:define-constant #:format-symbol
                 #:if-let #:length= #:make-keyword #:symbolicate #:when-let)

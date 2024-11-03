@@ -1,4 +1,4 @@
-* roguelike
+* Lispy Rogue
 
 ** Installation
 

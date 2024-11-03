@@ -1,4 +1,4 @@
-(in-package #:roguelike)
+(in-package #:lispy-rogue)
 
 
 (define-constant +window-width+ 1280)

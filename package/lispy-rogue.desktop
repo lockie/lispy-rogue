@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
-Name=roguelike
-Exec=roguelike
+Name=Lispy Rogue
+Exec=lispy-rogue
 Terminal=false
 Categories=Game;
 Icon=icon

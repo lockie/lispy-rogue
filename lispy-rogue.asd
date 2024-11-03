@@ -1,4 +1,4 @@
-(defsystem "roguelike"
+(defsystem "lispy-rogue"
   :version "0.0.1"
   :author "Andrew Kravchuk"
   :license "MIT"
@@ -33,5 +33,5 @@
   :description "An Autumn Lisp Game Jam 2024 entry"
   :defsystem-depends-on (#:deploy)
   :build-operation "deploy-op"
-  :build-pathname #P"roguelike"
-  :entry-point "roguelike:main")
+  :build-pathname #P"lispy-rogue"
+  :entry-point "lispy-rogue:main")

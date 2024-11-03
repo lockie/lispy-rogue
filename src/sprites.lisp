@@ -1,4 +1,4 @@
-(in-package #:roguelike)
+(in-package #:lispy-rogue)
 
 
 (ecs:defcomponent sprite-prefab

@@ -1,9 +1,9 @@
-(in-package #:roguelike)
+(in-package #:lispy-rogue)
 
 (define-constant +repl-update-interval+ 0.3d0)
 
 (defvar *resources-path*
-  (asdf:system-relative-pathname :roguelike #P"Resources/"))
+  (asdf:system-relative-pathname :lispy-rogue #P"Resources/"))
 
 (deploy:define-hook (:boot set-resources-path) ()
   (setf *resources-path*
@@ -60,7 +60,7 @@
                             (uiop:print-condition-backtrace e :stream s))
                           (cffi:null-pointer) :error)))))
     (uiop:chdir (setf *default-pathname-defaults* *resources-path*))
-    (al:set-app-name "roguelike")
+    (al:set-app-name "lispy-rogue")
     (unless (al:init)
       (error "Initializing liballegro failed"))
     (let ((config (al:load-config-file +config-path+)))
@@ -85,7 +85,7 @@
       (when (cffi:null-pointer-p display)
         (error "Initializing display failed"))
       (al:inhibit-screensaver t)
-      (al:set-window-title display "roguelike")
+      (al:set-window-title display "Lispy Rogue")
       (al:register-event-source event-queue
                                 (al:get-display-event-source display))
       (al:install-keyboard)

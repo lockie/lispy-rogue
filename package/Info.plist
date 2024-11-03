@@ -5,11 +5,11 @@
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleDisplayName</key>
-    <string>roguelike</string>
+    <string>Lispy Rogue</string>
     <key>CFBundleVersion</key>
     <string>0.0.1</string>
     <key>CFBundleExecutable</key>
-    <string>roguelike</string>
+    <string>lispy-rogue</string>
     <key>CFBundleIconFile</key>
     <string>icon.png</string>
     <key>NSHumanReadableCopyright</key>

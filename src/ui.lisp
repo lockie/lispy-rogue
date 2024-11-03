@@ -1,4 +1,4 @@
-(in-package #:roguelike)
+(in-package #:lispy-rogue)
 
 
 (cffi:defcallback %edit-filter :int ((edit :pointer) (char :unsigned-int))

@@ -3,8 +3,8 @@
 !system 'convert icon.png -define icon:auto-resize=16,32,48,64,256 %TEMP%/icon.ico'
 !system 'convert -resize 150x57 -extent 150x57 -gravity center -background white -alpha remove -alpha off icon.png BMP2:%TEMP%/icon.bmp'
 
-!define MUI_PRODUCT "roguelike"
-!define MUI_FILE "roguelike"
+!define MUI_PRODUCT "Lispy Rogue"
+!define MUI_FILE "lispy-rogue"
 !define MUI_VERSION $%VERSION%
 !define MUI_ABORTWARNING
 !define MUI_ICON "$%TEMP%\icon.ico"
@@ -13,8 +13,8 @@
 !define MUI_HEADERIMAGE_RIGHT
 !define MUI_HEADERIMAGE_UNBITMAP "$%TEMP%\icon.bmp"
 
-Name "roguelike"
-OutFile "../roguelike-${MUI_VERSION}-setup.exe"
+Name "Lispy Rogue"
+OutFile "../lispy-rogue-${MUI_VERSION}-setup.exe"
 
 ;Default installation folder
 InstallDir "$LOCALAPPDATA\Programs\${MUI_PRODUCT}"
