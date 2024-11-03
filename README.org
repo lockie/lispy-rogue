@@ -15,7 +15,9 @@
 + Andrew Kravchuk (awkravchuk@gmail.com)
 
 ** Credits
-
++ [[https://opengameart.org/content/dungeon-ambience][Dungeon Ambience]]
++ [[https://vurmux.itch.io/urizen-onebit-tileset][Urizen 1Bit Tileset]]
++ [[http://belluzj.github.io/fantasque-sans][Fantasque Sans Mono font]]
 + [[https://fonts.google.com/specimen/Inconsolata/about][Inconsolata font]]
 + [[http://tango.freedesktop.org][Tango icons]]
 
