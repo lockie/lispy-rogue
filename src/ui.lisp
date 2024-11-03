@@ -88,7 +88,9 @@
     (ui:layout-space-push :x 0.02 :y 1.0 :w 0.9 :h 0.9)
     (if (or *inventory-shown* *throw-window-shown*)
         (when (ecs:entity-valid-p *hovered-item*)
-          (ui:label-wrap (format nil "You see ~a." (item-name *hovered-item*)))
+          (ui:label-wrap (format nil "You see ~a from level ~a."
+                                 (item-name *hovered-item*)
+                                 (item-level *hovered-item*)))
           (ui:layout-space-push :x 0.02 :y 1.15 :w 1.0 :h 1.0)
           (ui:edit (describe-equipment *hovered-item*)
                    :flags (:multiline :no-horizontal-scroll :read-only)))

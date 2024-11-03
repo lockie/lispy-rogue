@@ -179,7 +179,8 @@
                     (:ring (format-symbol :keyword "RING~a" (random 7))))
                   x y)))
     (make-item object :name (format nil "the ~(~a~) ~(~a~)" grade
-                                    (if (eq slot :weapon) weapon-type slot)))
+                                    (if (eq slot :weapon) weapon-type slot))
+                      :level ilvl)
     (make-equipment object :slot slot
                            :type (if (eq slot :weapon) weapon-type slot))
     (make-bonus object)

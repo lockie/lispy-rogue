@@ -3,6 +3,7 @@
 
 (ecs:defcomponent item
   (name "" :type simple-string)
+  (level 0 :type fixnum)
   (owner -1 :type ecs:entity :index items))
 
 (ecs:defcomponent item-health-potion
@@ -95,14 +96,14 @@
       (t
        (log-message "You don't know how to use ~a." (item-name item))))))
 
-(defun make-health-potion (points x y)
+(defun make-health-potion (level points x y)
   (let ((object (make-sprite-object :health-potion x y)))
-    (make-item object :name "the health potion")
+    (make-item object :name "the health potion" :level level)
     (make-item-health-potion object :points points)
     object))
 
-(defun make-fireball-scroll (damage x y)
+(defun make-fireball-scroll (level damage x y)
   (let ((object (make-sprite-object :scroll x y)))
-    (make-item object :name "the fireball scroll")
+    (make-item object :name "the fireball scroll" :level level)
     (make-item-fireball-scroll object :damage damage)
     object))

@@ -110,11 +110,13 @@
          (let ((level-number (level-number level)))
            (ecase (random-item)
              (:health-potion
-              (make-health-potion (random-from-range (* 5  level-number)
+              (make-health-potion level-number
+                                  (random-from-range (* 5  level-number)
                                                      (* 25 level-number))
                                   x y))
              (:fireball-scroll
-              (make-fireball-scroll (random-from-range (* 15 level-number)
+              (make-fireball-scroll level-number
+                                    (random-from-range (* 15 level-number)
                                                        (* 30 level-number))
                                     x y))
              (:equipment
