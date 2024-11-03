@@ -254,7 +254,7 @@
     (ui:label "You beat the game! Now you are a true lispy rogue ^_^")))
 
 (define-constant +help-text+
-  '("Beat the game by descending to level 11 without dying."
+  '("Beat the game by descending to level 11 without dying. Good luck! (you gonna need it)"
     ""
     "                                            CONTROLS"
     "q w e    y k u    7 8 9"
