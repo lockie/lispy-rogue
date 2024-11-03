@@ -134,11 +134,6 @@
                                        (round (offense-max-damage enemy))))
                        :flags (:multiline :no-horizontal-scroll :read-only))))))))))))
 
-(define-constant +inventory-keys+ '(:1 :2 :3 :4 :5 :6 :7 :8 :9 :0 :a :b :c)
-  :test #'equal)
-
-(defparameter *hovered-item* -1)
-
 (ui:defwindow inventory (title items)
     (:title title
      :flags (border title)
@@ -168,14 +163,6 @@
                           (al:key-down keyboard-state key))
                   (return-from inventory item)))))
   nil)
-
-(declaim (type boolean *inventory-key-pressed* *inventory-shown*))
-(defparameter *inventory-key-pressed* nil)
-(defparameter *inventory-shown* nil)
-
-(declaim (type boolean *throw-key-pressed* *throw-window-shown*))
-(defparameter *throw-key-pressed* nil)
-(defparameter *throw-window-shown* nil)
 
 (ecs:defsystem rummage-inventory
   (:components-ro (player health)
@@ -290,10 +277,6 @@
           :do (ui:layout-space-push :x 0.02 :y i :w 1.0 :h 1.0)
               (ui:label string))))
 
-(declaim (type boolean *help-key-pressed* *help-shown*))
-(defparameter *help-key-pressed* nil)
-(defparameter *help-shown* t)
-
 (ecs:defsystem show-help
   (:components-ro (player)
    :enable (not *won*)
@@ -310,10 +293,6 @@
       (setf *help-shown* nil))
     (when *help-shown*
       (help ui-context))))
-
-(declaim (type boolean *levelup-shown* *levelup-key-pressed*))
-(defparameter *levelup-shown* nil)
-(defparameter *levelup-key-pressed* nil)
 
 (define-constant +stat-descriptions+
   '("   affects HP, armor & damage"

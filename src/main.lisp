@@ -14,7 +14,6 @@
 (define-constant +font-path+ "inconsolata.ttf" :test #'string=)
 (define-constant +font-size+ 24)
 (define-constant +ui-font-path+ "fantasque-sans-mono.ttf" :test #'string=)
-(define-constant +ui-font-size+ 28)
 
 
 (define-constant +config-path+ "../config.cfg" :test #'string=)

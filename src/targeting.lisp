@@ -19,9 +19,6 @@
                      (floor (+ col (/ +tile-size+ 2)))
                      (floor (+ row (/ +tile-size+ 2))))))
 
-(declaim (type boolean *targeting-key-pressed*))
-(defparameter *targeting-key-pressed* nil)
-
 (define-constant +targeting-color+ '(al::r 1.0 al::g 1.0 al::b 1.0 al::a 1.0)
   :test #'equal)
 

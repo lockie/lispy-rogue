@@ -9,6 +9,11 @@
 
 (define-constant +tile-size+ 24.0)
 
+(define-constant +ui-font-size+ 28)
+
+(define-constant +inventory-keys+ '(:1 :2 :3 :4 :5 :6 :7 :8 :9 :0 :a :b :c)
+  :test #'equal)
+
 (declaim ;;(inline round/tile-size)
          (ftype (function (single-float) single-float) round/tile-size))
 (defun round/tile-size (x)
@@ -163,6 +168,27 @@
 
 (declaim (type boolean *targeting*))
 (defparameter *targeting* nil)
+
+(declaim (type boolean *help-key-pressed* *help-shown*))
+(defparameter *help-key-pressed* nil)
+(defparameter *help-shown* t)
+
+(defparameter *hovered-item* -1)
+
+(declaim (type boolean *inventory-key-pressed* *inventory-shown*))
+(defparameter *inventory-key-pressed* nil)
+(defparameter *inventory-shown* nil)
+
+(declaim (type boolean *throw-key-pressed* *throw-window-shown*))
+(defparameter *throw-key-pressed* nil)
+(defparameter *throw-window-shown* nil)
+
+(declaim (type boolean *levelup-shown* *levelup-key-pressed*))
+(defparameter *levelup-shown* nil)
+(defparameter *levelup-key-pressed* nil)
+
+(declaim (type boolean *targeting-key-pressed*))
+(defparameter *targeting-key-pressed* nil)
 
 (defun log-message (control &rest args)
   (push (apply #'format nil control args) *message-log*))
