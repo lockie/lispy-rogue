@@ -21,6 +21,11 @@
 (defun init ()
   (setf *random-state* (make-random-state t))
   (ecs:bind-storage)
+  (let ((soundtrack (al:create-sample-instance
+                     (al:load-sample "dungeon.ogg"))))
+    (al:attach-sample-instance-to-mixer soundtrack (al:get-default-mixer))
+    (al:set-sample-instance-playmode soundtrack :loop)
+    (al:set-sample-instance-playing soundtrack t))
   (load-sprites "urizen-tileset.tsx")
   (make-starting-equipment
    (make-player-object 0.0 0.0))
