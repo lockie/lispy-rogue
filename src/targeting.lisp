@@ -24,7 +24,7 @@
 
 (ecs:defsystem do-targeting
   (:components-ro (player)
-   :after (draw-character-sprites draw-item-sprites draw-fow)
+   :after (draw-character-sprites draw-item-sprites draw-fow stop-turn)
    :enable (and *targeting*
                 (not *message-log-focused*)
                 (not *levelup-shown*)
