@@ -234,6 +234,7 @@
                  (setf target-x player-x
                        target-y player-y))
                (setf *player-position-hash* -1))
+             (setf *current-map* level)
              (return level)))
 
 

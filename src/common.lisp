@@ -147,6 +147,9 @@
 
     (t (concatenate 'string infinitive "s"))))
 
+(declaim (type ecs:entity *current-map*))
+(defvar *current-map*)
+
 (declaim (type boolean *turn* *should-quit* *won*))
 (defvar *turn* nil)
 (defvar *should-quit*)

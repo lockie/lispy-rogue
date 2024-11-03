@@ -35,7 +35,8 @@
                                  "the wall"
                                  "the floor"))))
 
-        ((has-item-p tile)
+        ((and (has-item-p tile)
+              (not (ecs:entity-valid-p (item-owner tile))))
          (setf description (item-name tile)))
 
         ((has-stairs-p tile)
@@ -229,6 +230,7 @@
                  (inventory ui-context "Throw away item" (items entity)))
         (log-message "You throw away ~a." (item-name selected-item))
         (setf (item-owner selected-item) -1
+              (parent-entity selected-item) *current-map*
               (position-x selected-item) position-x
               (position-y selected-item) position-y
               (tile-col  selected-item) tile-col
