@@ -96,7 +96,8 @@
                           :summing weight :into total
                           :collecting (cons total value)
                           :finally (unless (= 1.0 total)
-                                     (error "Weights do not add up to 1")))
+                                     (error "Weights do not add up to 1: ~a"
+                                            total)))
                   t)
                  :test #'<))))
 
