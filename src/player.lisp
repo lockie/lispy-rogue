@@ -198,6 +198,7 @@
    :enable *turn*)
   (incf mana-regen-elapsed dt)
   (when (> mana-regen-elapsed 1.0)
-    (log-message "You regenerate mana.")
-    (setf mana-regen-elapsed 0.0
-          mana-points (min mana-max (1+ mana-points)))))
+    (when (< mana-points mana-max)
+      (log-message "You regenerate mana.")
+      (setf mana-regen-elapsed 0.0)
+      (incf mana-points))))
