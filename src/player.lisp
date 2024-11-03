@@ -171,6 +171,7 @@
 (ecs:defsystem level-up
   (:components-ro (health)
    :components-rw (player)
+   :enable (not *levelup-shown*)
    :when (plusp health-points))
   (when (>= player-xp (next-level-xp player-level))
     (incf player-level)
