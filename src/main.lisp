@@ -20,6 +20,7 @@
 (define-constant +config-path+ "../config.cfg" :test #'string=)
 
 (defun init ()
+  (setf *random-state* (make-random-state t))
   (ecs:bind-storage)
   (load-sprites "urizen-tileset.tsx")
   (make-player-object 0.0 0.0)
