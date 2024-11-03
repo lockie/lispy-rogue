@@ -40,7 +40,8 @@
 
 (ecs:defcomponent character
   (name "" :type simple-string)
-  (vision-range 0.0 :type single-float)
+  (base-vision-range 0.0 :type single-float)
+  (vision-range base-vision-range :type single-float)
   (base-speed 0.0 :type single-float)
   (speed base-speed :type single-float)
   (target-x single-float-nan :type single-float)

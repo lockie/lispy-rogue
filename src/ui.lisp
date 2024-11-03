@@ -52,6 +52,7 @@
      :styles ((:item-color :window-fixed-background :r 0 :g 0 :b 0)
               (:item-color :edit-normal :r 0 :g 0 :b 0)
               (:color :edit-border-color :r 0 :g 0 :b 0)))
+  "Bleh."
   (ui:layout-space (:height (/ +window-height+ 2) :format :dynamic)
     (ui:layout-space-push :x 0.02 :y 0 :w 1.0 :h 0.1)
     ;; TODO tooltips?
@@ -88,23 +89,48 @@
         (ui:layout-space-push :x 0.02 :y 0.77 :w 1.0 :h 0.1)
         (ui:label (format nil "min damage ~11d" (round min-damage)))
         (ui:layout-space-push :x 0.02 :y 0.84 :w 1.0 :h 0.1)
-        (ui:label (format nil "max damage ~11d" (round max-damage)))))
-    (ui:layout-space-push :x 0.02 :y 1.0 :w 0.9 :h 0.9)
-    (if (or *inventory-shown* *throw-window-shown*)
-        (when (ecs:entity-valid-p *hovered-item*)
-          (ui:label-wrap (format nil "You see ~a from level ~a."
-                                 (item-name *hovered-item*)
-                                 (item-level *hovered-item*)))
-          (ui:layout-space-push :x 0.02 :y 1.15 :w 1.0 :h 1.0)
-          (ui:edit (describe-equipment *hovered-item*)
-                   :flags (:multiline :no-horizontal-scroll :read-only)))
-        (unless *levelup-shown*
-          (al:with-current-mouse-state mouse-state
-            (when-let (description
-                       (describe-tile
-                        (- (mouse-state-x mouse-state) (/ +tile-size+ 2))
-                        (- (mouse-state-y mouse-state) (/ +tile-size+ 2))))
-              (ui:label-wrap (format nil "You see ~a." description))))))))
+        (ui:label (format nil "max damage ~11d" (round max-damage))))
+      (ui:layout-space-push :x 0.02 :y 1.0 :w 0.9 :h 0.9)
+      (if (or *inventory-shown* *throw-window-shown*)
+          (when (ecs:entity-valid-p *hovered-item*)
+            (ui:label-wrap (format nil "You see ~a from level ~a."
+                                   (item-name *hovered-item*)
+                                   (item-level *hovered-item*)))
+            (ui:layout-space-push :x 0.02 :y 1.15 :w 1.0 :h 1.0)
+            (ui:edit (describe-equipment *hovered-item*)
+                     :flags (:multiline :no-horizontal-scroll :read-only)))
+          (unless *levelup-shown*
+            (al:with-current-mouse-state mouse-state
+              (let ((x (- (mouse-state-x mouse-state) (/ +tile-size+ 2)))
+                    (y (- (mouse-state-y mouse-state) (/ +tile-size+ 2))))
+                (when-let (description (describe-tile x y))
+                  (ui:label-wrap (format nil "You see ~a." description))
+                  (when-let (enemy (live-character-at x y))
+                    (when (>= (stats-int player) (enemy-level enemy))
+                      (ui:layout-space-push :x 0.02 :y 1.15 :w 1.1 :h 1.0)
+                      (ui:edit
+                       (format nil "~@{~a~^~%~}"
+                               (format nil "HP  ~3d / ~3d"
+                                       (health-points enemy) (health-max enemy))
+                               (format nil "movement speed ~7d"
+                                       (round (character-speed enemy)))
+                               (format nil "evasion ~14d"
+                                       (round (defense-evasion enemy)))
+                               (format nil "block chance ~8d%"
+                                       (round (* (defense-block-chance enemy) 100)))
+                               (format nil "armor ~16d"
+                                       (round (defense-armor enemy)))
+                               (format nil "attack range ~9d"
+                                       (floor (offense-range enemy) +tile-size+))
+                               (format nil "attack speed ~7,1f/s"
+                                       (/ 1 (offense-duration enemy)))
+                               (format nil "accuracy ~13d"
+                                       (round (offense-accuracy enemy)))
+                               (format nil "min damage ~11d"
+                                       (round (offense-min-damage enemy)))
+                               (format nil "max damage ~11d"
+                                       (round (offense-max-damage enemy))))
+                       :flags (:multiline :no-horizontal-scroll :read-only))))))))))))
 
 (define-constant +inventory-keys+ '(:1 :2 :3 :4 :5 :6 :7 :8 :9 :0 :a :b :c)
   :test #'equal)
@@ -288,7 +314,7 @@
 (define-constant +stat-descriptions+
   '("   affects HP, armor & damage"
     "   affects evasion & accuracy"
-    "   affects mana")
+    "   affects mana and vision")
   :test #'equal)
 
 (ui:defwindow levelup ()

@@ -148,7 +148,9 @@
 
 (defun make-player-object (x y)
   (let ((object (make-sprite-object :hero x y)))
-    (make-character object :name "you" :base-speed 150.0 :vision-range 100.0)
+    (make-character object :name "you"
+                           :base-speed 100.0
+                           :base-vision-range 90.0)
     (make-player object)
     (make-stats object :base-str 1 :base-dex 1 :base-int 1)
     (make-health object :base-max 100)

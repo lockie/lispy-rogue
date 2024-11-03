@@ -2,6 +2,7 @@
 
 
 (ecs:defcomponent enemy
+  (level 0 :type fixnum)
   (xp 0 :type fixnum))
 
 (ecs:defsystem chase-player

@@ -106,7 +106,8 @@
       (with-mana () character
         (setf max (scale-parameter/items mp (+ base-max (* int 10.0)) :int t)))
       (with-character () character
-        (setf speed (scale-parameter/items speed base-speed)))
+        (setf speed (scale-parameter/items speed base-speed)
+              vision-range (+ base-vision-range (* int 5.0))))
       (with-defense () character
         (setf evasion      (scale-parameter/items
                             evasion
