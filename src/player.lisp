@@ -163,11 +163,14 @@
 (define-constant +levelup-base+ 0)
 (define-constant +levelup-factor+ 20)
 
+(defun next-level-xp (current-level)
+  (+ +levelup-base+ (* current-level +levelup-factor+)))
+
 (ecs:defsystem level-up
   (:components-ro (health)
    :components-rw (player)
    :when (plusp health-points))
-  (when (> player-xp (+ +levelup-base+ (* player-level +levelup-factor+)))
+  (when (>= player-xp (next-level-xp player-level))
     (incf player-level)
     (log-message "You reach level ~a." player-level)
     (setf *turn* nil

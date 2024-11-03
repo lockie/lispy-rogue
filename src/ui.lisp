@@ -61,29 +61,33 @@
       (ui:layout-space-push :x 0.02 :y 0.07 :w 1.0 :h 0.1)
       (with-mana () player
         (ui:label (format nil "MP  ~3d / ~3d" points max)))
-      (with-stats () player
+      (with-player () player
         (ui:layout-space-push :x 0.02 :y 0.14 :w 1.0 :h 0.1)
+        (ui:label (format nil "LVL ~2d  XP ~4d / ~4d"
+                          level xp (next-level-xp level))))
+      (with-stats () player
+        (ui:layout-space-push :x 0.02 :y 0.21 :w 1.0 :h 0.1)
         (ui:label (format nil "STR ~2d  DEX ~2d  INT ~2d" str dex int)))
       (with-character () player
-        (ui:layout-space-push :x 0.02 :y 0.21 :w 1.0 :h 0.1)
+        (ui:layout-space-push :x 0.02 :y 0.28 :w 1.0 :h 0.1)
         (ui:label (format nil "movement speed ~7d" (round speed))))
       (with-defense () player
-        (ui:layout-space-push :x 0.02 :y 0.28 :w 1.0 :h 0.1)
-        (ui:label (format nil "evasion ~14d" (round evasion)))
         (ui:layout-space-push :x 0.02 :y 0.35 :w 1.0 :h 0.1)
-        (ui:label (format nil "block chance ~8d%" (round (* block-chance 100))))
+        (ui:label (format nil "evasion ~14d" (round evasion)))
         (ui:layout-space-push :x 0.02 :y 0.42 :w 1.0 :h 0.1)
+        (ui:label (format nil "block chance ~8d%" (round (* block-chance 100))))
+        (ui:layout-space-push :x 0.02 :y 0.49 :w 1.0 :h 0.1)
         (ui:label (format nil "armor ~16d" (round armor))))
       (with-offense () player
-        (ui:layout-space-push :x 0.02 :y 0.49 :w 1.0 :h 0.1)
-        (ui:label (format nil "attack range ~9d" (floor range +tile-size+)))
         (ui:layout-space-push :x 0.02 :y 0.56 :w 1.0 :h 0.1)
-        (ui:label (format nil "attack speed ~7,1f/s" (/ 1 duration)))
+        (ui:label (format nil "attack range ~9d" (floor range +tile-size+)))
         (ui:layout-space-push :x 0.02 :y 0.63 :w 1.0 :h 0.1)
-        (ui:label (format nil "accuracy ~13d" (round accuracy)))
+        (ui:label (format nil "attack speed ~7,1f/s" (/ 1 duration)))
         (ui:layout-space-push :x 0.02 :y 0.70 :w 1.0 :h 0.1)
-        (ui:label (format nil "min damage ~11d" (round min-damage)))
+        (ui:label (format nil "accuracy ~13d" (round accuracy)))
         (ui:layout-space-push :x 0.02 :y 0.77 :w 1.0 :h 0.1)
+        (ui:label (format nil "min damage ~11d" (round min-damage)))
+        (ui:layout-space-push :x 0.02 :y 0.84 :w 1.0 :h 0.1)
         (ui:label (format nil "max damage ~11d" (round max-damage)))))
     (ui:layout-space-push :x 0.02 :y 1.0 :w 0.9 :h 0.9)
     (if (or *inventory-shown* *throw-window-shown*)
