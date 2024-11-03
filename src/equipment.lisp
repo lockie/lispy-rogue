@@ -260,13 +260,24 @@
 
 (defun toggle-equipped (item)
   (let ((equipped (has-equipped-p item))
-        (slot (equipment-slot item)))
+        (slot (equipment-slot item))
+        (type (equipment-type item)))
     (if equipped
         (block unequip
           (delete-equipped item)
           (recalculate-combat-parameters (player-entity 1))
           (log-message "You unequip ~a." (item-name item)))
         (block equip
+          (when (or (and (eq slot :weapon)
+                         (eq type :bow)
+                         (ecs:entity-valid-p
+                          (equipped :shield :missing-error-p nil)))
+                    (and (eq slot :shield)
+                         (ecs:entity-valid-p
+                          (equipped :weapon :missing-error-p nil))
+                         (eq (equipment-type (equipped :weapon)) :bow)))
+            (log-message "You cannot equip bow and shield simultaneously.")
+            (return-from toggle-equipped))
           (let ((currently-equipped (equipped slot :missing-error-p nil)))
             (when (ecs:entity-valid-p currently-equipped)
               (toggle-equipped currently-equipped)))
