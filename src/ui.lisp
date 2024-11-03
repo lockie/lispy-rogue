@@ -106,7 +106,8 @@
                 (when-let (description (describe-tile x y))
                   (ui:label-wrap (format nil "You see ~a." description))
                   (when-let (enemy (live-character-at x y))
-                    (when (>= (stats-int player) (enemy-level enemy))
+                    (when (and (/= enemy player)
+                               (>= (stats-int player) (enemy-level enemy)))
                       (ui:layout-space-push :x 0.02 :y 1.15 :w 1.1 :h 1.0)
                       (ui:edit
                        (format nil "~@{~a~^~%~}"
