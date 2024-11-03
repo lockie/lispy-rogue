@@ -308,8 +308,9 @@
     (when *help-shown*
       (help ui-context))))
 
-(declaim (type boolean *levelup-shown*))
+(declaim (type boolean *levelup-shown* *levelup-key-pressed*))
 (defparameter *levelup-shown* nil)
+(defparameter *levelup-key-pressed* nil)
 
 (define-constant +stat-descriptions+
   '("   affects HP, armor & damage"
@@ -335,11 +336,17 @@
         :for description :in +stat-descriptions+
         :for key :in '(:1 :2 :3)
         :for i :from 0
+        :with key-pressed := nil
         :do (ui:selectable-label
              (format nil "(~(~a~)) ~a" key stat)
              (cffi:inc-pointer selected (* i (cffi:foreign-type-size :int))))
             (ui:label description)
+            (when (al:key-down keyboard-state key)
+              (setf key-pressed t))
             (when (or (plusp (cffi:mem-aref selected :int i))
-                      (al:key-down keyboard-state key))
-              (return-from levelup i)))))
+                      (and (not *levelup-key-pressed*)
+                           (al:key-down keyboard-state key)))
+              (setf *levelup-key-pressed* key-pressed)
+              (return-from levelup i))
+        :finally (setf *levelup-key-pressed* key-pressed))))
   nil)
