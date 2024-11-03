@@ -121,13 +121,13 @@
            (ecase (random-item)
              (:health-potion
               (make-health-potion level-number
-                                  (random-from-range (* 5  level-number)
-                                                     (* 25 level-number))
+                                  (random-from-range (* 10  level-number)
+                                                     (* 15 level-number))
                                   x y))
              (:fireball-scroll
               (make-fireball-scroll level-number
-                                    (random-from-range (* 15 level-number)
-                                                       (* 30 level-number))
+                                    (random-from-range (* 3 level-number)
+                                                       (* 5 level-number))
                                     x y))
              (:equipment
               (make-equipment-item level-number x y))))

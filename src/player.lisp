@@ -155,15 +155,19 @@
     (make-stats object :base-str 1 :base-dex 1 :base-int 1)
     (make-health object :base-max 100)
     (make-mana object :base-max 20)
-    (make-defense object :base-evasion 10.0 :base-block-chance 0.2 :base-armor 10.0)
-    (make-offense object :base-min-damage 10.0 :base-max-damage 15.0 :base-accuracy 20.0 :base-duration 0.4 :range (* 1.5 +tile-size+))
+    (make-defense object
+                  :base-evasion 10.0
+                  :base-block-chance 0.25
+                  :base-armor 10.0)
+    (make-offense object
+                  :base-min-damage 1.0
+                  :base-max-damage 10.0
+                  :base-accuracy 10.0
+                  :base-duration 0.4
+                  :range (* 1.5 +tile-size+))
     (make-melee object)
-    (recalculate-combat-parameters object)
-    object
-    ))
+    object))
 
-(define-constant +levelup-base+ 0)
-(define-constant +levelup-factor+ 20)
 (defun make-starting-equipment (player)
   (let ((starting-dagger (make-sprite-object :dagger 0.0 0.0)))
     (make-item starting-dagger :name "the dull dagger" :owner player)
@@ -179,7 +183,7 @@
   (recalculate-combat-parameters player))
 
 (defun next-level-xp (current-level)
-  (+ +levelup-base+ (* current-level +levelup-factor+)))
+  (* 3 current-level current-level))
 
 (ecs:defsystem level-up
   (:components-ro (health)
@@ -213,7 +217,7 @@
    :when (plusp health-points)
    :enable *turn*)
   (incf mana-regen-elapsed dt)
-  (when (> mana-regen-elapsed 1.0)
+  (when (> mana-regen-elapsed 2.0)
     (when (< mana-points mana-max)
       (log-message "You regenerate mana.")
       (setf mana-regen-elapsed 0.0)

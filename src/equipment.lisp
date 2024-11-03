@@ -51,20 +51,20 @@
       (4  (incf dex-mult          (random (* 0.1 ilvl))))
       (5  (incf int-mult          (random (* 0.1 ilvl))))
       (6  (incf hp-flat           (random (* 10 ilvl))))
-      (7  (incf mp-flat           (random (* 10 ilvl))))
+      (7  (incf mp-flat           (random (* 5 ilvl))))
       (8  (incf hp-mult           (random (* 0.1 ilvl))))
       (9  (incf mp-mult           (random (* 0.1 ilvl))))
-      (10 (incf speed-flat        (random (* 10.0 ilvl))))
+      (10 (incf speed-flat        (random (* 5.0 ilvl))))
       (11 (incf speed-mult        (random (* 0.1 ilvl))))
-      (12 (incf evasion-flat      (random (* 10 ilvl))))
-      (13 (incf armor-flat        (random (* 10 ilvl))))
+      (12 (incf evasion-flat      (random (* 5 ilvl))))
+      (13 (incf armor-flat        (random (* 5 ilvl))))
       (14 (incf evasion-mult      (random (* 0.1 ilvl))))
       (15 (incf block-chance-mult (random (- 1.0 (/ 1.0 (exp (* 0.1 ilvl)))))))
       (16 (incf armor-mult        (random (* 0.1 ilvl))))
       (17 (incf attack-speed-flat (random (* 1.0 ilvl))))
-      (18 (incf accuracy-flat     (random (* 10 ilvl))))
-      (19 (incf min-dmg-flat      (random (* 10 ilvl))))
-      (20 (incf max-dmg-flat      (random (* 10 ilvl))))
+      (18 (incf accuracy-flat     (random (* 5 ilvl))))
+      (19 (incf min-dmg-flat      (random (* 5 ilvl))))
+      (20 (incf max-dmg-flat      (random (* 5 ilvl))))
       (21 (incf attack-speed-mult (random (* 0.1 ilvl))))
       (22 (incf accuracy-mult     (random (* 0.1 ilvl))))
       (23 (incf min-dmg-mult      (random (* 0.1 ilvl))))
@@ -102,9 +102,9 @@
             dex (scale-parameter/items dex base-dex :int t)
             int (scale-parameter/items int base-int :int t))
       (with-health () character
-        (setf max (scale-parameter/items hp (+ base-max (* str 10.0)) :int t)))
+        (setf max (scale-parameter/items hp (+ base-max (* str 20.0)) :int t)))
       (with-mana () character
-        (setf max (scale-parameter/items mp (+ base-max (* int 10.0)) :int t)))
+        (setf max (scale-parameter/items mp (+ base-max (* int 20.0)) :int t)))
       (with-character () character
         (setf speed (scale-parameter/items speed base-speed)
               vision-range (+ base-vision-range (* int 5.0))))
@@ -122,23 +122,23 @@
                                0.0)
               armor        (scale-parameter/items
                             armor
-                            (+ base-armor (* str 20.0)))))
+                            (* base-armor (1+ (/ str 20.0))))))
       (with-offense () character
         (setf duration   (/ 1.0
                             (scale-parameter/items attack-speed
                                                    (/ 1.0 base-duration)))
               accuracy   (scale-parameter/items
                           accuracy
-                          (+ base-accuracy (* dex 2.0)))
+                          (* base-accuracy (1+ (/ dex 20.0))))
               ;; NOTE: scaling damage identically for both melee and ranged
               min-damage (scale-parameter/items
                           min-dmg
-                          (+ base-min-damage (1+ (/ str 20.0))))
+                          (* base-min-damage (1+ (/ str 20.0))))
               max-damage (max
                           min-damage
                           (scale-parameter/items
                            max-dmg
-                           (+ base-max-damage (1+ (/ str 20.0))))))))))
+                           (* base-max-damage (1+ (/ str 20.0))))))))))
 
 (define-weighted-random-generator random-equipment-slot
   (0.3  :armor)
@@ -159,8 +159,8 @@
 
 (define-weighted-random-generator random-grade
   (0.8 :common)
-  (0.15 :magic)
-  (0.05 :rare))
+  (0.16 :magic)
+  (0.04 :rare))
 
 (defun make-equipment-item (ilvl x y)
   (let* ((slot (random-equipment-slot))

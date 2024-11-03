@@ -118,5 +118,5 @@
 (defun make-fireball-scroll (level damage x y)
   (let ((object (make-sprite-object :scroll x y)))
     (make-item object :name "the fireball scroll" :level level)
-    (make-item-fireball-scroll object :damage damage :mana-cost 10)
+    (make-item-fireball-scroll object :damage damage :mana-cost 20)
     object))
