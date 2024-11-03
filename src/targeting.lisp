@@ -14,7 +14,10 @@
           *turn* nil
           *targeted-item* item
           *target-x* col
-          *target-y* row)))
+          *target-y* row)
+    (al:set-mouse-xy (al:get-current-display)
+                     (floor (+ col (/ +tile-size+ 2)))
+                     (floor (+ row (/ +tile-size+ 2))))))
 
 (declaim (type boolean *targeting-key-pressed*))
 (defparameter *targeting-key-pressed* nil)
