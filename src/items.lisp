@@ -10,6 +10,7 @@
   (points 0 :type fixnum))
 
 (ecs:defcomponent item-fireball-scroll
+  (mana-cost 0 :type fixnum)
   (damage 0 :type fixnum))
 
 (ecs:defsystem draw-item-sprites
@@ -84,13 +85,18 @@
 
       ((has-item-fireball-scroll-p item)
        (if (and x y)
-           (loop :initially (log-message "The fireball explodes.")
-                 :with damage := (item-fireball-scroll-damage item)
-                 :for character :in (area-damage x y damage)
-                 :do (log-message "~@(~a~) ~a burned for ~a damage."
-                                  (character-name character)
-                                  (verb "get" character) damage)
-                 :finally (ecs:delete-entity item))
+           (if (>= (mana-points player) (item-fireball-scroll-mana-cost item))
+               (loop :initially (decf (mana-points player)
+                                      (item-fireball-scroll-mana-cost item))
+                                (log-message "The fireball explodes.")
+                     :with damage := (item-fireball-scroll-damage item)
+                     :for character :in (area-damage x y damage)
+                     :do (log-message "~@(~a~) ~a burned for ~a damage."
+                                      (character-name character)
+                                   (verb "get" character) damage)
+                     :finally (ecs:delete-entity item))
+               (log-message "You need ~a mana to cast fireball."
+                            (item-fireball-scroll-mana-cost item)))
            (start-targeting item)))
 
       (t
@@ -105,5 +111,5 @@
 (defun make-fireball-scroll (level damage x y)
   (let ((object (make-sprite-object :scroll x y)))
     (make-item object :name "the fireball scroll" :level level)
-    (make-item-fireball-scroll object :damage damage)
+    (make-item-fireball-scroll object :damage damage :mana-cost 10)
     object))
