@@ -206,6 +206,8 @@
            ((:dagger :bow)
             (setf accuracy-flat (1+ (random (* 10 ilvl))))))))
       ;; extra bonuses
+      (when (and (eq grade :common) (or (eq slot :ring) (eq slot :amulet)))
+        (setf grade :magic))
       (case grade
         (:magic
          (add-random-bonus object ilvl))
