@@ -64,9 +64,13 @@
       ((and (has-equipped-p item)
           (has-ranged-p player) x y)
      (if-let (target-character (live-character-at x y))
-       (progn
-         (attack player target-character)
-         (setf *turn* t))
+       (if (and (approx-equal x (tile-col player) (offense-range player))
+                (approx-equal y (tile-row player) (offense-range player)))
+           (progn
+             (attack player target-character)
+             (setf *turn* t))
+           (log-message "~@(~a~) is too far away for an attack."
+                        (character-name target-character)))
        (log-message "You see nothing to shoot at.")))
 
       ((has-equipment-p item)
