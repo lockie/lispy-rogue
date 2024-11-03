@@ -207,6 +207,8 @@
               (tile-col  selected-item) tile-col
               (tile-row  selected-item) tile-row
               (tile-hash selected-item) tile-hash)
+        (when (has-equipped-p selected-item)
+          (delete-equipped selected-item))
         (setf *throw-window-shown* nil
               *turn* t)))))
 
