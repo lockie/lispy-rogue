@@ -14,7 +14,7 @@
 (define-constant +inventory-keys+ '(:1 :2 :3 :4 :5 :6 :7 :8 :9 :0 :a :b :c)
   :test #'equal)
 
-(declaim ;;(inline round/tile-size)
+(declaim (inline round/tile-size)
          (ftype (function (single-float) single-float) round/tile-size))
 (defun round/tile-size (x)
   (* +tile-size+ (round x +tile-size+)))
@@ -115,12 +115,12 @@
   (< (abs (- a b)) epsilon))
 
 (declaim
- ;;(inline rating->chance)
+ (inline rating->chance)
  (ftype (function (single-float) single-float) rating->chance))
 (defun rating->chance (value)
   (/ 1.0 (+ 1.0 (sqrt (max 0.0 value)))))
 
-(declaim ;;(inline nearest-tile)
+(declaim (inline nearest-tile)
          (ftype (function (single-float single-float single-float single-float)
                           (values single-float single-float))
                 nearest-tile))
