@@ -8,32 +8,207 @@
  </tile>
  <tile id="102">
   <properties>
-   <property name="name" value="wall"/>
+   <property name="name" value="wall00"/>
+  </properties>
+ </tile>
+ <tile id="103">
+  <properties>
+   <property name="name" value="wall01"/>
+  </properties>
+ </tile>
+ <tile id="107">
+  <properties>
+   <property name="name" value="wall50"/>
+  </properties>
+ </tile>
+ <tile id="108">
+  <properties>
+   <property name="name" value="wall51"/>
   </properties>
  </tile>
  <tile id="153">
   <properties>
-   <property name="name" value="brick-wall"/>
+   <property name="name" value="wall10"/>
   </properties>
  </tile>
  <tile id="154">
   <properties>
-   <property name="name" value="wall2"/>
+   <property name="name" value="wall11"/>
   </properties>
  </tile>
  <tile id="155">
   <properties>
-   <property name="name" value="wall3"/>
+   <property name="name" value="wall20"/>
+  </properties>
+ </tile>
+ <tile id="158">
+  <properties>
+   <property name="name" value="wall21"/>
+  </properties>
+ </tile>
+ <tile id="161">
+  <properties>
+   <property name="name" value="wall30"/>
+  </properties>
+ </tile>
+ <tile id="162">
+  <properties>
+   <property name="name" value="wall31"/>
+  </properties>
+ </tile>
+ <tile id="204">
+  <properties>
+   <property name="name" value="wall40"/>
+  </properties>
+ </tile>
+ <tile id="205">
+  <properties>
+   <property name="name" value="wall41"/>
+  </properties>
+ </tile>
+ <tile id="256">
+  <properties>
+   <property name="name" value="floor0"/>
+  </properties>
+ </tile>
+ <tile id="257">
+  <properties>
+   <property name="name" value="floor1"/>
+  </properties>
+ </tile>
+ <tile id="258">
+  <properties>
+   <property name="name" value="floor2"/>
+  </properties>
+ </tile>
+ <tile id="263">
+  <properties>
+   <property name="name" value="floor3"/>
+  </properties>
+ </tile>
+ <tile id="264">
+  <properties>
+   <property name="name" value="floor4"/>
+  </properties>
+ </tile>
+ <tile id="265">
+  <properties>
+   <property name="name" value="floor5"/>
+  </properties>
+ </tile>
+ <tile id="266">
+  <properties>
+   <property name="name" value="floor6"/>
+  </properties>
+ </tile>
+ <tile id="267">
+  <properties>
+   <property name="name" value="floor7"/>
   </properties>
  </tile>
  <tile id="270">
   <properties>
-   <property name="name" value="grass1"/>
+   <property name="name" value="floor8"/>
+  </properties>
+ </tile>
+ <tile id="271">
+  <properties>
+   <property name="name" value="floor9"/>
+  </properties>
+ </tile>
+ <tile id="272">
+  <properties>
+   <property name="name" value="floor10"/>
+  </properties>
+ </tile>
+ <tile id="306">
+  <properties>
+   <property name="name" value="floor11"/>
+  </properties>
+ </tile>
+ <tile id="307">
+  <properties>
+   <property name="name" value="floor12"/>
+  </properties>
+ </tile>
+ <tile id="308">
+  <properties>
+   <property name="name" value="floor13"/>
+  </properties>
+ </tile>
+ <tile id="309">
+  <properties>
+   <property name="name" value="floor14"/>
+  </properties>
+ </tile>
+ <tile id="310">
+  <properties>
+   <property name="name" value="floor15"/>
+  </properties>
+ </tile>
+ <tile id="311">
+  <properties>
+   <property name="name" value="floor16"/>
   </properties>
  </tile>
  <tile id="312">
   <properties>
-   <property name="name" value="floor"/>
+   <property name="name" value="floor17"/>
+  </properties>
+ </tile>
+ <tile id="313">
+  <properties>
+   <property name="name" value="floor18"/>
+  </properties>
+ </tile>
+ <tile id="314">
+  <properties>
+   <property name="name" value="floor19"/>
+  </properties>
+ </tile>
+ <tile id="315">
+  <properties>
+   <property name="name" value="floor20"/>
+  </properties>
+ </tile>
+ <tile id="316">
+  <properties>
+   <property name="name" value="floor21"/>
+  </properties>
+ </tile>
+ <tile id="317">
+  <properties>
+   <property name="name" value="floor22"/>
+  </properties>
+ </tile>
+ <tile id="318">
+  <properties>
+   <property name="name" value="floor23"/>
+  </properties>
+ </tile>
+ <tile id="319">
+  <properties>
+   <property name="name" value="floor24"/>
+  </properties>
+ </tile>
+ <tile id="320">
+  <properties>
+   <property name="name" value="floor25"/>
+  </properties>
+ </tile>
+ <tile id="322">
+  <properties>
+   <property name="name" value="floor26"/>
+  </properties>
+ </tile>
+ <tile id="324">
+  <properties>
+   <property name="name" value="floor27"/>
+  </properties>
+ </tile>
+ <tile id="325">
+  <properties>
+   <property name="name" value="floor28"/>
   </properties>
  </tile>
  <tile id="436">

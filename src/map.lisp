@@ -97,6 +97,10 @@
                    (has-health-p tile))
            :return tile))
 
+(defvar *floor-tile*)
+(defvar *wall-tile1*)
+(defvar *wall-tile2*)
+
 (define-weighted-random-generator random-item
   (0.5 :health-potion)
   (0.3 :fireball-scroll)
@@ -144,7 +148,7 @@
                 (with-map-tile () tile
                   (setf blocks 0
                         obscures 0))
-                (change-sprite tile :floor)))
+                (change-sprite tile *floor-tile*)))
     :finally (unless first (place-objects level x1 y1 x2 y2))))
 
 (defun make-horizontal-tunnel (x1 x2 y)
@@ -155,7 +159,7 @@
           (with-map-tile () tile
             (setf blocks 0
                   obscures 0))
-          (change-sprite tile :floor))))
+          (change-sprite tile *floor-tile*))))
 
 (defun make-vertical-tunnel (y1 y2 x)
   (loop
@@ -165,7 +169,7 @@
           (with-map-tile () tile
             (setf blocks 0
                   obscures 0))
-          (change-sprite tile :floor))))
+          (change-sprite tile *floor-tile*))))
 
 (defun make-map (level-number)
   (loop
@@ -173,13 +177,20 @@
     :with rooms := nil
     :with player-x := 0.0
     :with player-y := 0.0
+    :with *floor-tile* := (format-symbol :keyword "FLOOR~a" (random 29))
+    :with wall-tile := (random 6)
+    :with *wall-tile1* := (format-symbol :keyword "WALL~a0" wall-tile)
+    :with *wall-tile2* := (format-symbol :keyword "WALL~a1" wall-tile)
     :initially (delete-tile (player-entity 1)) ;; HACK
                (loop
                  :for x :of-type single-float
                  :from 0.0 :below +world-width+ :by +tile-size+
                  :do (loop :for y :of-type single-float
                            :from 0.0 :below +world-height+ :by +tile-size+
-                           :do (let ((object (make-sprite-object :wall x y)))
+                           :do (let ((object (make-sprite-object
+                                              (if (zerop (random 2))
+                                                  *wall-tile1* *wall-tile2*)
+                                              x y)))
                                  (make-parent object :entity level)
                                  (make-map-tile object :blocks 1)
                                  (make-view object))))
