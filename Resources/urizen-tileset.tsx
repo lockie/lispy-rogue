@@ -56,6 +56,11 @@
    <property name="name" value="wall31"/>
   </properties>
  </tile>
+ <tile id="192">
+  <properties>
+   <property name="name" value="oni-warrior"/>
+  </properties>
+ </tile>
  <tile id="204">
   <properties>
    <property name="name" value="wall40"/>
@@ -64,6 +69,16 @@
  <tile id="205">
   <properties>
    <property name="name" value="wall41"/>
+  </properties>
+ </tile>
+ <tile id="232">
+  <properties>
+   <property name="name" value="lizard-warrior"/>
+  </properties>
+ </tile>
+ <tile id="233">
+  <properties>
+   <property name="name" value="lizard-archer"/>
   </properties>
  </tile>
  <tile id="256">
@@ -119,6 +134,21 @@
  <tile id="272">
   <properties>
    <property name="name" value="floor10"/>
+  </properties>
+ </tile>
+ <tile id="282">
+  <properties>
+   <property name="name" value="demon-warrior"/>
+  </properties>
+ </tile>
+ <tile id="283">
+  <properties>
+   <property name="name" value="demon-archer"/>
+  </properties>
+ </tile>
+ <tile id="284">
+  <properties>
+   <property name="name" value="demon-crusher"/>
   </properties>
  </tile>
  <tile id="306">
@@ -221,6 +251,61 @@
    <property name="name" value="goblin-archer"/>
   </properties>
  </tile>
+ <tile id="439">
+  <properties>
+   <property name="name" value="goblin-crusher"/>
+  </properties>
+ </tile>
+ <tile id="487">
+  <properties>
+   <property name="name" value="troll-warrior"/>
+  </properties>
+ </tile>
+ <tile id="491">
+  <properties>
+   <property name="name" value="troll-crusher"/>
+  </properties>
+ </tile>
+ <tile id="497">
+  <properties>
+   <property name="name" value="skeleton-warrior"/>
+  </properties>
+ </tile>
+ <tile id="501">
+  <properties>
+   <property name="name" value="skeleton-crusher"/>
+  </properties>
+ </tile>
+ <tile id="504">
+  <properties>
+   <property name="name" value="skeleton-archer"/>
+  </properties>
+ </tile>
+ <tile id="539">
+  <properties>
+   <property name="name" value="wisp-archer"/>
+  </properties>
+ </tile>
+ <tile id="545">
+  <properties>
+   <property name="name" value="wisp-warrior"/>
+  </properties>
+ </tile>
+ <tile id="751">
+  <properties>
+   <property name="name" value="kobold-archer"/>
+  </properties>
+ </tile>
+ <tile id="753">
+  <properties>
+   <property name="name" value="kobold-warrior"/>
+  </properties>
+ </tile>
+ <tile id="757">
+  <properties>
+   <property name="name" value="kobold-crusher"/>
+  </properties>
+ </tile>
  <tile id="816">
   <properties>
    <property name="name" value="hero"/>
@@ -231,9 +316,44 @@
    <property name="name" value="hero-corpse"/>
   </properties>
  </tile>
+ <tile id="893">
+  <properties>
+   <property name="name" value="demon-corpse"/>
+  </properties>
+ </tile>
+ <tile id="895">
+  <properties>
+   <property name="name" value="oni-corpse"/>
+  </properties>
+ </tile>
+ <tile id="896">
+  <properties>
+   <property name="name" value="troll-corpse"/>
+  </properties>
+ </tile>
+ <tile id="897">
+  <properties>
+   <property name="name" value="skeleton-corpse"/>
+  </properties>
+ </tile>
+ <tile id="898">
+  <properties>
+   <property name="name" value="lizard-corpse"/>
+  </properties>
+ </tile>
  <tile id="902">
   <properties>
    <property name="name" value="goblin-corpse"/>
+  </properties>
+ </tile>
+ <tile id="903">
+  <properties>
+   <property name="name" value="kobold-corpse"/>
+  </properties>
+ </tile>
+ <tile id="904">
+  <properties>
+   <property name="name" value="wisp-corpse"/>
   </properties>
  </tile>
  <tile id="1305">

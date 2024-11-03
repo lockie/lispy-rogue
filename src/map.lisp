@@ -107,21 +107,17 @@
   (0.2 :equipment))
 
 (defun place-objects (level x1 y1 x2 y2)
-  (dotimes (_ (random (1+ +room-max-monsters+)))
-    (let ((x (random-from-range (+ x1 +tile-size+) (- x2 +tile-size+)))
-          (y (random-from-range (+ y1 +tile-size+) (- y2 +tile-size+))))
-      (unless (blocked -1 x y)
-        (make-parent
-         (if (zerop (random 2))
-             (make-melee-enemy-object :goblin-warrior "the goblin warrior" x y)
-             (make-ranged-enemy-object :goblin-archer "the goblin archer" x y))
-         :entity level))))
-  (dotimes (_ (random (1+ +room-max-items+)))
-    (let ((x (random-from-range (+ x1 +tile-size+) (- x2 +tile-size+)))
-          (y (random-from-range (+ y1 +tile-size+) (- y2 +tile-size+))))
-      (unless (has-object x y)
-        (make-parent
-         (let ((level-number (level-number level)))
+  (let ((level-number (level-number level)))
+    (dotimes (_ (random (1+ +room-max-monsters+)))
+      (let ((x (random-from-range (+ x1 +tile-size+) (- x2 +tile-size+)))
+            (y (random-from-range (+ y1 +tile-size+) (- y2 +tile-size+))))
+        (unless (blocked -1 x y)
+          (make-parent (make-enemy-object level-number x y) :entity level))))
+    (dotimes (_ (random (1+ +room-max-items+)))
+      (let ((x (random-from-range (+ x1 +tile-size+) (- x2 +tile-size+)))
+            (y (random-from-range (+ y1 +tile-size+) (- y2 +tile-size+))))
+        (unless (has-object x y)
+          (make-parent
            (ecase (random-item)
              (:health-potion
               (make-health-potion level-number
