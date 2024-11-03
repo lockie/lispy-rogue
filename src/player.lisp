@@ -186,3 +186,15 @@
       (1 (incf stats-base-dex))
       (2 (incf stats-base-int)))
     (recalculate-combat-parameters entity)))
+
+(ecs:defsystem regen-mana
+  (:components-ro (player health)
+   :components-rw (mana)
+   :arguments ((dt single-float))
+   :when (plusp health-points)
+   :enable *turn*)
+  (incf mana-regen-elapsed dt)
+  (when (> mana-regen-elapsed 1.0)
+    (log-message "You regenerate mana.")
+    (setf mana-regen-elapsed 0.0
+          mana-points (min mana-max (1+ mana-points)))))

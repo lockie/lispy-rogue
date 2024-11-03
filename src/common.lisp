@@ -62,7 +62,8 @@
 (ecs:defcomponent mana
   (base-max 0 :type fixnum)
   (max base-max :type fixnum)
-  (points max :type fixnum))
+  (points max :type fixnum)
+  (regen-elapsed 0.0 :type single-float))
 
 (ecs:defcomponent attack
   (elapsed 0.0 :type single-float)
