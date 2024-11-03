@@ -33,18 +33,22 @@
                  :when character :do (damage character value)
                  :when character :collect character)))
 
+(declaim (inline sqr))
+(defun sqr (x)
+  (* x x))
+
 (defun maybe-hit (attacker target accuracy min-damage max-damage)
   (with-defense () target
     (let ((attacker-name (character-name attacker))
           (target-name (character-name target)))
-      (if (> accuracy evasion)
+      (if (< (exp (- (sqr (/ accuracy evasion)))) (random 1.0))
           (if (< block-chance (random 1.0))
               (let* ((damage (random-from-range min-damage max-damage))
                      (reduction (/ armor (+ armor (* 10.0 damage))))
                      (damage-dealt (floor (* damage (- 1.0 reduction)))))
                 (log-message "~@(~a~) ~a ~a physical damage to ~a."
-                                 attacker-name (verb "deal" attacker)
-                                 damage-dealt target-name)
+                             attacker-name (verb "deal" attacker)
+                             damage-dealt target-name)
                 (damage target damage-dealt))
               (log-message "~@(~a~) ~a an attack by ~a."
                            target-name (verb "block" target)
