@@ -23,7 +23,8 @@
   (setf *random-state* (make-random-state t))
   (ecs:bind-storage)
   (load-sprites "urizen-tileset.tsx")
-  (make-player-object 0.0 0.0)
+  (make-starting-equipment
+   (make-player-object 0.0 0.0))
   (make-map 1)
   (setf *message-log* nil)
   (log-message "You enter the dungeon."))
