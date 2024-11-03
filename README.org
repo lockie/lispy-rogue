@@ -1,7 +1,10 @@
 * Lispy Rogue
 
 ** Installation
+Just grab the binaries from the [[https://github.com/lockie/lispy-rogue/releases][Releases]] section.
 
+Alternatively, install [[https://quicklisp.org][Quicklisp]], drop symlink to the repo to your
+[[http://blog.quicklisp.org/2018/01/the-quicklisp-local-projects-mechanism.html][local-projects]], install [[http://dist.luckylambda.technology/releases/lucky-lambda/][LuckyLambda]] dist and run ~(ql:quickload :lispy-rogue)~ in your Lisp.
 
 
 ** Minimum system requirements
