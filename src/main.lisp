@@ -50,8 +50,8 @@
 
 (defun render ()
   (nk:allegro-render)
-  (al:draw-text *font* (al:map-rgba 255 255 255 0) 0 0 0
-                (format nil "~d FPS" *fps*)))
+  #+nil (al:draw-text *font* (al:map-rgba 255 255 255 0) 0 0 0
+                      (format nil "~d FPS" *fps*)))
 
 (cffi:defcallback %main :int ((argc :int) (argv :pointer))
   (declare (ignore argc argv))
