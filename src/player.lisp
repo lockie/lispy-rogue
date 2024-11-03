@@ -180,7 +180,6 @@
    :enable *levelup-shown*
    :arguments ((ui-context cffi:foreign-pointer)))
   (when-let (stat (levelup ui-context))
-    (format t "picked stat ~a~%" stat)
     (setf *levelup-shown* nil)
     (case stat
       (0 (incf stats-base-str))
