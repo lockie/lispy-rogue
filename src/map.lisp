@@ -78,6 +78,17 @@
                        (has-health-p tile)))
         :return tile))
 
+(defun has-object (x y)
+  (loop :for tile :of-type ecs:entity :in (tiles (a*:encode-float-coordinates
+                                                  (round/tile-size x)
+                                                  (round/tile-size y)))
+        :when (or (and (has-map-tile-p tile)
+                       (plusp (map-tile-blocks tile)))
+                  (and (has-character-p tile)
+                       (has-health-p tile))
+                  (has-item-p tile))
+          :return tile))
+
 (defun live-character-at (x y)
   (loop :for tile :of-type ecs:entity :in (tiles (a*:encode-float-coordinates
                                                   (round/tile-size x)
@@ -92,7 +103,6 @@
   (0.2 :equipment))
 
 (defun place-objects (level x1 y1 x2 y2)
-  ;; TODO dont place items on same tile
   (dotimes (_ (random (1+ +room-max-monsters+)))
     (let ((x (random-from-range (+ x1 +tile-size+) (- x2 +tile-size+)))
           (y (random-from-range (+ y1 +tile-size+) (- y2 +tile-size+))))
@@ -105,7 +115,7 @@
   (dotimes (_ (random (1+ +room-max-items+)))
     (let ((x (random-from-range (+ x1 +tile-size+) (- x2 +tile-size+)))
           (y (random-from-range (+ y1 +tile-size+) (- y2 +tile-size+))))
-      (unless (blocked -1 x y)
+      (unless (has-object x y)
         (make-parent
          (let ((level-number (level-number level)))
            (ecase (random-item)
