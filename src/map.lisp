@@ -103,7 +103,8 @@
 
 (define-weighted-random-generator random-item
   (0.5 :health-potion)
-  (0.3 :fireball-scroll)
+  (0.1 :fireball-scroll)
+  (0.2 :cripple-scroll)
   (0.2 :equipment))
 
 (defun place-objects (level x1 y1 x2 y2)
@@ -129,6 +130,11 @@
                                     (random-from-range (* 3 level-number)
                                                        (* 5 level-number))
                                     x y))
+             (:cripple-scroll
+              (make-cripple-scroll level-number
+                                   (random-from-range (* 1 level-number)
+                                                      (* 3 level-number))
+                                   x y))
              (:equipment
               (make-equipment-item level-number x y))))
          :entity level)))))

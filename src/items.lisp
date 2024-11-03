@@ -13,6 +13,10 @@
   (mana-cost 0 :type fixnum)
   (damage 0 :type fixnum))
 
+(ecs:defcomponent item-cripple-scroll
+  (mana-cost 0 :type fixnum)
+  (damage 0 :type fixnum))
+
 (ecs:defsystem draw-item-sprites
   (:components-ro (tile sprite item)
    :when (and (not (ecs:entity-valid-p item-owner))
@@ -106,6 +110,26 @@
                             (item-fireball-scroll-mana-cost item)))
            (start-targeting item)))
 
+      ((has-item-cripple-scroll-p item)
+       (if (and x y)
+           (if (>= (mana-points player) (item-cripple-scroll-mana-cost item))
+               (if-let (target-character (live-character-at x y))
+                 (with-character () target-character
+                   (if (/= target-character player)
+                       (progn
+                         (setf speed (/ speed 2.0))
+                         (with-health () target-character
+                           (decf points (item-cripple-scroll-damage item))
+                           (log-message "~@(~a~) gets crippled for ~a damage."
+                                        (character-name target-character)
+                                        (item-cripple-scroll-damage item)))
+                         (ecs:delete-entity item))
+                       (log-message "You see nothing to cast cripple at.")))
+                 (log-message "You see nothing to cast cripple at."))
+               (log-message "You need ~a mana to cast cripple."
+                            (item-fireball-scroll-mana-cost item)))
+           (start-targeting item)))
+
       (t
        (log-message "You don't know how to use ~a." (item-name item))))))
 
@@ -119,4 +143,10 @@
   (let ((object (make-sprite-object :scroll x y)))
     (make-item object :name "the fireball scroll" :level level)
     (make-item-fireball-scroll object :damage damage :mana-cost 20)
+    object))
+
+(defun make-cripple-scroll (level damage x y)
+  (let ((object (make-sprite-object :scroll x y)))
+    (make-item object :name "the cripple scroll" :level level)
+    (make-item-cripple-scroll object :damage damage :mana-cost 20)
     object))
