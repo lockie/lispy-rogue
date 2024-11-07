@@ -27,54 +27,54 @@
                 (not *levelup-shown*)
                 (not *help-shown*)
                 (not *won*))
-   :after (move-characters))
-  (let ((target-x nil) (target-y nil))
-    (al:with-current-keyboard-state keyboard-state
-      (let ((dx 0) (dy 0) (wait 0))
-        (when (keys-down keyboard-state :up    :W :K :pad-8) (setf dy -1.0))
-        (when (keys-down keyboard-state :down  :S :J :pad-2) (setf dy +1.0))
-        (when (keys-down keyboard-state :left  :A :H :pad-4) (setf dx -1.0))
-        (when (keys-down keyboard-state :right :D :L :pad-6) (setf dx +1.0))
-        (when (keys-down keyboard-state :Q :Y :pad-7) (setf dx -1.0 dy -1.0))
-        (when (keys-down keyboard-state :E :U :pad-9) (setf dx +1.0 dy -1.0))
-        (when (keys-down keyboard-state :Z :B :pad-1) (setf dx -1.0 dy +1.0))
-        (when (keys-down keyboard-state :C :N :pad-3) (setf dx +1.0 dy +1.0))
-        (when (keys-down keyboard-state :space :R)    (setf wait 1))
+   :after (move-characters)
+   :arguments ((keyboard-state cffi:foreign-pointer)))
+  (let ((target-x nil) (target-y nil)
+        (dx 0) (dy 0) (wait 0))
+    (when (keys-down keyboard-state :up    :W :K :pad-8) (setf dy -1.0))
+    (when (keys-down keyboard-state :down  :S :J :pad-2) (setf dy +1.0))
+    (when (keys-down keyboard-state :left  :A :H :pad-4) (setf dx -1.0))
+    (when (keys-down keyboard-state :right :D :L :pad-6) (setf dx +1.0))
+    (when (keys-down keyboard-state :Q :Y :pad-7) (setf dx -1.0 dy -1.0))
+    (when (keys-down keyboard-state :E :U :pad-9) (setf dx +1.0 dy -1.0))
+    (when (keys-down keyboard-state :Z :B :pad-1) (setf dx -1.0 dy +1.0))
+    (when (keys-down keyboard-state :C :N :pad-3) (setf dx +1.0 dy +1.0))
+    (when (keys-down keyboard-state :space :R)    (setf wait 1))
 
-        (if (and (zerop dx) (zerop dy) (zerop wait))
-            (setf *move-key-pressed* nil)
-            (unless *move-key-pressed*
-              (when (and (zerop wait) (has-wait-p entity))
-                (delete-wait entity))
-              (if (plusp wait)
-                  (progn
-                    (log-message "You stand still.")
-                    (assign-wait entity)
-                    (setf *turn* t))
-                  (progn
-                    (setf target-x (clamp (+ tile-col (* dx +tile-size+)) 0.0
-                                          (- +world-width+ +tile-size+))
-                          target-y (clamp (+ tile-row (* dy +tile-size+)) 0.0
-                                          (- +world-height+ +tile-size+)))
-                    (unless (live-character-at target-x target-y)
-                      (log-message "You take a step ~a."
-                                   (cond ((and (plusp  dx) (plusp  dy))
-                                          "southeast")
-                                         ((and (plusp  dx) (minusp dy))
-                                          "northeast")
-                                         ((and (minusp dx) (plusp  dy))
-                                          "southwest")
-                                         ((and (minusp dx) (minusp dy))
-                                          "northwest")
-                                         ((plusp  dx)
-                                          "east")
-                                         ((minusp dx)
-                                          "west")
-                                         ((plusp  dy)
-                                          "south")
-                                         ((minusp dy)
-                                          "north"))))))
-              (setf *move-key-pressed* t)))))
+    (if (and (zerop dx) (zerop dy) (zerop wait))
+        (setf *move-key-pressed* nil)
+        (unless *move-key-pressed*
+          (when (and (zerop wait) (has-wait-p entity))
+            (delete-wait entity))
+          (if (plusp wait)
+              (progn
+                (log-message "You stand still.")
+                (assign-wait entity)
+                (setf *turn* t))
+              (progn
+                (setf target-x (clamp (+ tile-col (* dx +tile-size+)) 0.0
+                                      (- +world-width+ +tile-size+))
+                      target-y (clamp (+ tile-row (* dy +tile-size+)) 0.0
+                                      (- +world-height+ +tile-size+)))
+                (unless (live-character-at target-x target-y)
+                  (log-message "You take a step ~a."
+                               (cond ((and (plusp  dx) (plusp  dy))
+                                      "southeast")
+                                     ((and (plusp  dx) (minusp dy))
+                                      "northeast")
+                                     ((and (minusp dx) (plusp  dy))
+                                      "southwest")
+                                     ((and (minusp dx) (minusp dy))
+                                      "northwest")
+                                     ((plusp  dx)
+                                      "east")
+                                     ((minusp dx)
+                                      "west")
+                                     ((plusp  dy)
+                                      "south")
+                                     ((minusp dy)
+                                      "north"))))))
+          (setf *move-key-pressed* t)))
     (al:with-current-mouse-state mouse-state
       (if (= 1 (mouse-state-buttons mouse-state))
           (unless *mouse-clicked*
@@ -110,14 +110,14 @@
                 (not *targeting*)
                 (not *help-shown*)
                 (not *won*))
-   :when (plusp health-points))
-  (al:with-current-keyboard-state keyboard-state
-    (if (al:key-down keyboard-state :F)
-        (unless *fire-key-pressed*
-          (setf *fire-key-pressed* t
-                *targeting-key-pressed* t)
-          (start-targeting (equipped :weapon)))
-        (setf *fire-key-pressed* nil))))
+   :when (plusp health-points)
+   :arguments ((keyboard-state cffi:foreign-pointer)))
+  (if (al:key-down keyboard-state :F)
+      (unless *fire-key-pressed*
+        (setf *fire-key-pressed* t
+              *targeting-key-pressed* t)
+        (start-targeting (equipped :weapon)))
+      (setf *fire-key-pressed* nil)))
 
 (ecs:defsystem wait-turn
   (:components-ro (player)
@@ -201,8 +201,9 @@
    :components-rw (stats)
    :when (plusp health-points)
    :enable *levelup-shown*
-   :arguments ((ui-context cffi:foreign-pointer)))
-  (when-let (stat (levelup ui-context))
+   :arguments ((keyboard-state cffi:foreign-pointer)
+               (ui-context cffi:foreign-pointer)))
+  (when-let (stat (levelup ui-context keyboard-state))
     (setf *levelup-shown* nil)
     (case stat
       (0 (incf stats-base-str))

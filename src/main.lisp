@@ -36,7 +36,7 @@
 (declaim (type fixnum *fps*))
 (defvar *fps* 0)
 
-(defun update (dt ui-context)
+(defun update (dt keyboard-state ui-context)
   (unless (zerop dt)
     (setf *fps* (round 1 dt)))
   (if *won*
@@ -44,7 +44,9 @@
     (progn
       (message-log ui-context)
       (info ui-context)
-      (ecs:run-systems :dt (float dt 0.0) :ui-context ui-context))))
+      (ecs:run-systems :dt (float dt 0.0)
+                       :keyboard-state keyboard-state
+                       :ui-context ui-context))))
 
 (defvar *font*)
 
@@ -99,7 +101,9 @@
       (al:register-event-source event-queue
                                 (al:get-mouse-event-source))
       (unwind-protect
-           (cffi:with-foreign-object (event '(:union al:event))
+           (cffi:with-foreign-objects
+               ((event '(:union al:event))
+                (keyboard-state '(:struct al::keyboard-state)))
              (init)
              (#+darwin trivial-main-thread:call-in-main-thread #-darwin funcall
               #'livesupport:setup-lisp-repl)
@@ -134,8 +138,9 @@
                      (livesupport:update-repl-link)
                      (setf last-repl-update ticks))
                    (al:clear-to-color (al:map-rgb 0 0 0))
+                   (al:get-keyboard-state keyboard-state)
                    (livesupport:continuable
-                     (update dt ui-context)
+                     (update dt keyboard-state ui-context)
                      (render))
                    (al:flip-display)
                :finally (nk:allegro-shutdown)

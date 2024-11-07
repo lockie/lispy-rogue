@@ -134,7 +134,7 @@
                                        (round (offense-max-damage enemy))))
                        :flags (:multiline :no-horizontal-scroll :read-only))))))))))))
 
-(ui:defwindow inventory (title items)
+(ui:defwindow inventory (title items keyboard-state)
     (:title title
      :flags (border title)
      :x 280 :y 50 :w 400 :h 500
@@ -143,25 +143,24 @@
               (:item-color :window-header-normal :r 0 :g 0 :b 0)
               (:item-color :selectable-normal :r 0 :g 0 :b 0)))
   (ui:layout-row-static :height +ui-font-size+ :item-width 375 :columns 1)
-  (al:with-current-keyboard-state keyboard-state
-    (cffi:with-foreign-object (selected :int (length +inventory-keys+))
-      (dotimes (i (length +inventory-keys+))
-        (setf (cffi:mem-aref selected :int i) 0))
-      (loop :for item :in (stable-sort items (lambda (a b) (string< (item-name a)
-                                                               (item-name b))))
-            :for key :in +inventory-keys+
-            :for i :of-type fixnum :from 0
-            :do (ui:with-context ctx
-                  (when (plusp (the fixnum (nk:widget-is-hovered ctx)))
-                    (setf *hovered-item* item)))
-                (ui:selectable-label
-                 (format nil "(~(~a~)) ~a ~:[~;[equipped]~]" key
-                         (subseq (item-name item) 4)
-                         (has-equipped-p item))
-                 (cffi:inc-pointer selected (* i (cffi:foreign-type-size :int))))
-                (when (or (plusp (cffi:mem-aref selected :int i))
-                          (al:key-down keyboard-state key))
-                  (return-from inventory item)))))
+  (cffi:with-foreign-object (selected :int (length +inventory-keys+))
+    (dotimes (i (length +inventory-keys+))
+      (setf (cffi:mem-aref selected :int i) 0))
+    (loop :for item :in (stable-sort items (lambda (a b) (string< (item-name a)
+                                                             (item-name b))))
+          :for key :in +inventory-keys+
+          :for i :of-type fixnum :from 0
+          :do (ui:with-context ctx
+                (when (plusp (the fixnum (nk:widget-is-hovered ctx)))
+                  (setf *hovered-item* item)))
+              (ui:selectable-label
+               (format nil "(~(~a~)) ~a ~:[~;[equipped]~]" key
+                       (subseq (item-name item) 4)
+                       (has-equipped-p item))
+               (cffi:inc-pointer selected (* i (cffi:foreign-type-size :int))))
+              (when (or (plusp (cffi:mem-aref selected :int i))
+                        (al:key-down keyboard-state key))
+                (return-from inventory item))))
   nil)
 
 (ecs:defsystem rummage-inventory
@@ -173,21 +172,22 @@
                 (not *levelup-shown*)
                 (not *help-shown*)
                 (not *won*))
-   :arguments ((ui-context cffi:foreign-pointer)))
-  (al:with-current-keyboard-state keyboard-state
-    (if (al:key-down keyboard-state :I)
-        (unless *inventory-key-pressed*
-          (setf *hovered-item* -1
-                *inventory-key-pressed* t
-                *inventory-shown* (not *inventory-shown*)
-                *turn* (not *inventory-shown*)))
-        (setf *inventory-key-pressed* nil))
-    (when (and *inventory-shown* (al:key-down keyboard-state :escape))
-      (setf *inventory-shown* nil
-            *turn* t)))
+   :arguments ((keyboard-state cffi:foreign-pointer)
+               (ui-context cffi:foreign-pointer)))
+  (if (al:key-down keyboard-state :I)
+      (unless *inventory-key-pressed*
+        (setf *hovered-item* -1
+              *inventory-key-pressed* t
+              *inventory-shown* (not *inventory-shown*)
+              *turn* (not *inventory-shown*)))
+      (setf *inventory-key-pressed* nil))
+  (when (and *inventory-shown* (al:key-down keyboard-state :escape))
+    (setf *inventory-shown* nil
+          *turn* t))
   (when *inventory-shown*
     (when-let (selected-item
-               (inventory ui-context "Inventory" (items entity)))
+               (inventory ui-context "Inventory" (items entity)
+                          keyboard-state))
       (use-item selected-item nil nil)
       (setf *inventory-shown* nil
             *turn* t))))
@@ -201,32 +201,33 @@
                 (not *levelup-shown*)
                 (not *help-shown*)
                 (not *won*))
-   :arguments ((ui-context cffi:foreign-pointer)))
-  (al:with-current-keyboard-state keyboard-state
-    (if (al:key-down keyboard-state :T)
-        (unless *throw-key-pressed*
-          (setf *throw-key-pressed* t
-                *throw-window-shown* (not *throw-window-shown*)
-                *turn* (not *throw-window-shown*)))
-        (setf *throw-key-pressed* nil))
-    (when (and *throw-window-shown* (al:key-down keyboard-state :escape))
+   :arguments ((keyboard-state cffi:foreign-pointer)
+               (ui-context cffi:foreign-pointer)))
+  (if (al:key-down keyboard-state :T)
+      (unless *throw-key-pressed*
+        (setf *throw-key-pressed* t
+              *throw-window-shown* (not *throw-window-shown*)
+              *turn* (not *throw-window-shown*)))
+      (setf *throw-key-pressed* nil))
+  (when (and *throw-window-shown* (al:key-down keyboard-state :escape))
+    (setf *throw-window-shown* nil
+          *turn* t))
+  (when *throw-window-shown*
+    (when-let (selected-item
+               (inventory ui-context "Throw away item" (items entity)
+                          keyboard-state))
+      (log-message "You throw away ~a." (item-name selected-item))
+      (setf (item-owner selected-item) -1
+            (parent-entity selected-item) *current-map*
+            (position-x selected-item) position-x
+            (position-y selected-item) position-y
+            (tile-col  selected-item) tile-col
+            (tile-row  selected-item) tile-row
+            (tile-hash selected-item) tile-hash)
+      (when (has-equipped-p selected-item)
+        (delete-equipped selected-item))
       (setf *throw-window-shown* nil
-            *turn* t))
-    (when *throw-window-shown*
-      (when-let (selected-item
-                 (inventory ui-context "Throw away item" (items entity)))
-        (log-message "You throw away ~a." (item-name selected-item))
-        (setf (item-owner selected-item) -1
-              (parent-entity selected-item) *current-map*
-              (position-x selected-item) position-x
-              (position-y selected-item) position-y
-              (tile-col  selected-item) tile-col
-              (tile-row  selected-item) tile-row
-              (tile-hash selected-item) tile-hash)
-        (when (has-equipped-p selected-item)
-          (delete-equipped selected-item))
-        (setf *throw-window-shown* nil
-              *turn* t)))))
+            *turn* t))))
 
 (ui:defwindow congratulations ()
     (:title "Congratulations!"
@@ -280,19 +281,19 @@
 (ecs:defsystem show-help
   (:components-ro (player)
    :enable (not *won*)
-   :arguments ((ui-context cffi:foreign-pointer)))
-  (al:with-current-keyboard-state keyboard-state
-    (if (keys-down keyboard-state :F1 :slash)
-        (unless *help-key-pressed*
-          (setf *help-key-pressed* t
-                *help-shown* (not *help-shown*))
-          (when *help-shown*
-            (setf *turn* nil)))
-        (setf *help-key-pressed* nil))
-    (when (and *help-shown* (al:key-down keyboard-state :escape))
-      (setf *help-shown* nil))
-    (when *help-shown*
-      (help ui-context))))
+   :arguments ((ui-context cffi:foreign-pointer)
+               (keyboard-state cffi:foreign-pointer)))
+  (if (keys-down keyboard-state :F1 :slash)
+      (unless *help-key-pressed*
+        (setf *help-key-pressed* t
+              *help-shown* (not *help-shown*))
+        (when *help-shown*
+          (setf *turn* nil)))
+      (setf *help-key-pressed* nil))
+  (when (and *help-shown* (al:key-down keyboard-state :escape))
+    (setf *help-shown* nil))
+  (when *help-shown*
+    (help ui-context)))
 
 (define-constant +stat-descriptions+
   '("   affects HP, armor & damage"
@@ -300,7 +301,7 @@
     "   affects mana and vision")
   :test #'equal)
 
-(ui:defwindow levelup ()
+(ui:defwindow levelup (keyboard-state)
     (:title "Choose stat to raise"
      :flags (border title)
      :x 280 :y 50 :w 400 :h 500
@@ -309,26 +310,25 @@
               (:item-color :window-header-normal :r 0 :g 0 :b 0)
               (:item-color :selectable-normal :r 0 :g 0 :b 0)))
   (ui:layout-row-static :height +ui-font-size+ :item-width 375 :columns 1)
-  (al:with-current-keyboard-state keyboard-state
-    (cffi:with-foreign-object (selected :int 3)
-      (dotimes (i 3)
-        (setf (cffi:mem-aref selected :int i) 0))
-      (loop
-        :for stat :in '("STR" "DEX" "INT")
-        :for description :in +stat-descriptions+
-        :for key :in '(:1 :2 :3)
-        :for i :from 0
-        :with key-pressed := nil
-        :do (ui:selectable-label
-             (format nil "(~(~a~)) ~a" key stat)
-             (cffi:inc-pointer selected (* i (cffi:foreign-type-size :int))))
-            (ui:label description)
-            (when (al:key-down keyboard-state key)
-              (setf key-pressed t))
-            (when (or (plusp (cffi:mem-aref selected :int i))
-                      (and (not *levelup-key-pressed*)
-                           (al:key-down keyboard-state key)))
-              (setf *levelup-key-pressed* key-pressed)
-              (return-from levelup i))
-        :finally (setf *levelup-key-pressed* key-pressed))))
+  (cffi:with-foreign-object (selected :int 3)
+    (dotimes (i 3)
+      (setf (cffi:mem-aref selected :int i) 0))
+    (loop
+      :for stat :in '("STR" "DEX" "INT")
+      :for description :in +stat-descriptions+
+      :for key :in '(:1 :2 :3)
+      :for i :from 0
+      :with key-pressed := nil
+      :do (ui:selectable-label
+           (format nil "(~(~a~)) ~a" key stat)
+           (cffi:inc-pointer selected (* i (cffi:foreign-type-size :int))))
+          (ui:label description)
+          (when (al:key-down keyboard-state key)
+            (setf key-pressed t))
+          (when (or (plusp (cffi:mem-aref selected :int i))
+                    (and (not *levelup-key-pressed*)
+                         (al:key-down keyboard-state key)))
+            (setf *levelup-key-pressed* key-pressed)
+            (return-from levelup i))
+      :finally (setf *levelup-key-pressed* key-pressed)))
   nil)
