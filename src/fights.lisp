@@ -17,10 +17,12 @@
        (make-attack attacker :target target)))))
 
 (defun damage (target value)
+  (declare (type fixnum value))
   (with-health () target
     (decf points value)))
 
 (defun area-damage (col row value)
+  (declare (type single-float col row))
   (loop :for x :from (max 0.0 (- col +tile-size+))
         :to (min +world-width+ (+ col +tile-size+)) :by +tile-size+
         :nconcing
@@ -38,6 +40,7 @@
   (* x x))
 
 (defun maybe-hit (attacker target accuracy min-damage max-damage)
+  (declare (type single-float accuracy min-damage max-damage))
   (with-defense () target
     (let ((attacker-name (character-name attacker))
           (target-name (character-name target)))

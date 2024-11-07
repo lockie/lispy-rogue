@@ -41,7 +41,8 @@
   :test #'equalp)
 
 (defun cast-light (cx cy row start end radius xx xy yx yy)
-  (declare (type fixnum row))
+  (declare (type fixnum row xx xy yx yy)
+           (type single-float cx cy start end radius))
   (unless (< start end)
     (loop
       :with radius* := (/ (* radius radius) (* +tile-size+ +tile-size+)) 

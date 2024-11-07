@@ -32,6 +32,7 @@
                     :name ,name)))))))
 
 (defun make-sprite-object (name x y)
+  (declare (type (single-float 0.0 #.(float most-positive-fixnum)) x y))
   (let ((prefab (sprite-prefab name)))
     (ecs:make-object
      `((:sprite :bitmap ,(sprite-bitmap prefab) :name ,name)

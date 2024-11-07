@@ -14,6 +14,8 @@
          (dy  (- y2* y1*))
          (steep (> (abs dy) (abs dx)))
          (swapped nil) (error 0) (ystep 0) (y 0) (points nil))
+    (declare (type single-float x1 y1 x2 y2)
+             (type fixnum x1* x2* y1* y2* error))
     (when steep
       (rotatef x1* y1*)
       (rotatef x2* y2*))

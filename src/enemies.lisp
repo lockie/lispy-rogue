@@ -66,6 +66,7 @@
 (defun %make-enemy-object (sprite mlvl x y
                            &key xp speed vision range hp evasion (block 0.0) armor
                                 min-dmg max-dmg accuracy duration)
+  (declare (type keyword sprite))
   (let ((object (make-sprite-object sprite x y)))
     (make-character object
                     :name (format nil "the ~{~(~a~)~^ ~}"
@@ -90,6 +91,7 @@
 (define-constant +melee-range+ (* 1.5 +tile-size+))
 
 (defun make-enemy-object (mlvl x y)
+  (declare (type fixnum mlvl))
   (case (if (>= mlvl 5) (random-high-level-enemy) (random-low-level-enemy))
     (:demon-archer
      (%make-enemy-object :demon-archer mlvl x y

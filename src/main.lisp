@@ -36,6 +36,9 @@
 (declaim (type fixnum *fps*))
 (defvar *fps* 0)
 
+(declaim
+ (ftype (function (double-float cffi:foreign-pointer cffi:foreign-pointer))
+        update))
 (defun update (dt keyboard-state ui-context)
   (unless (zerop dt)
     (setf *fps* (round 1 dt)))
@@ -130,7 +133,7 @@
                         :do (nk:allegro-handle-event event)
                         :always (not (eq type :display-close))
                         :finally (nk:input-end ui-context))
-               :do (let ((new-ticks (al:get-time)))
+               :do (let ((new-ticks (the double-float (al:get-time))))
                      (setf dt (- new-ticks ticks)
                            ticks new-ticks))
                    (when (> (- ticks last-repl-update)

@@ -1,11 +1,6 @@
 (in-package #:lispy-rogue)
 
 
-(ecs:defcomponent player
-  (xp 0 :type fixnum)
-  (level 1 :type fixnum)
-  (player 1 :type bit :index player-entity :unique t))
-
 (ecs:defcomponent wait
   (elapsed 0.0 :type single-float))
 
@@ -30,7 +25,8 @@
    :after (move-characters)
    :arguments ((keyboard-state cffi:foreign-pointer)))
   (let ((target-x nil) (target-y nil)
-        (dx 0) (dy 0) (wait 0))
+        (dx 0.0) (dy 0.0) (wait 0))
+    (declare (type single-float dx dy))
     (when (keys-down keyboard-state :up    :W :K :pad-8) (setf dy -1.0))
     (when (keys-down keyboard-state :down  :S :J :pad-2) (setf dy +1.0))
     (when (keys-down keyboard-state :left  :A :H :pad-4) (setf dx -1.0))

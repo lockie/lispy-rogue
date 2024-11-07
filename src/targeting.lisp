@@ -40,7 +40,8 @@
                  *target-x* single-float-nan
                  *target-y* single-float-nan)
            (return-from ecs:current-entity)))
-    (let ((dx 0) (dy 0) (finish nil) (cancel nil))
+    (let ((dx 0.0) (dy 0.0) (finish nil) (cancel nil))
+      (declare (type single-float dx dy))
       (when (keys-down keyboard-state :enter :F)
         (setf finish t))
       (when (keys-down keyboard-state :escape)

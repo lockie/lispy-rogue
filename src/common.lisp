@@ -17,7 +17,7 @@
 (declaim (inline round/tile-size)
          (ftype (function (single-float) single-float) round/tile-size))
 (defun round/tile-size (x)
-  (* +tile-size+ (round x +tile-size+)))
+  (* +tile-size+ (the fixnum (round x +tile-size+))))
 
 (ecs:defcomponent parent
   (entity -1 :type ecs:entity :index children))
@@ -51,6 +51,11 @@
   (speed base-speed :type single-float)
   (target-x single-float-nan :type single-float)
   (target-y single-float-nan :type single-float))
+
+(ecs:defcomponent player
+  (xp 0 :type fixnum)
+  (level 1 :type fixnum)
+  (player 1 :type bit :index player-entity :unique t))
 
 (ecs:defcomponent stats
   (base-str 0 :type fixnum)
@@ -129,9 +134,11 @@
    (- dest-x (* +tile-size+ (signum (- dest-x source-x))))
    (- dest-y (* +tile-size+ (signum (- dest-y source-y))))))
 
+(declaim (inline random-from-range))
 (defun random-from-range (start end)
   (+ start (random (+ 1 (- end start)))))
 
+(declaim (ftype (function (simple-string ecs:entity) simple-string) verb))
 (defun verb (infinitive entity)
   (cond
     ((has-player-p entity)

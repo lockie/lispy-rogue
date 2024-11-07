@@ -72,25 +72,25 @@
         (ui:label (format nil "STR ~2d  DEX ~2d  INT ~2d" str dex int)))
       (with-character () player
         (ui:layout-space-push :x 0.02 :y 0.28 :w 1.0 :h 0.1)
-        (ui:label (format nil "movement speed ~7d" (round speed))))
+        (ui:label (format nil "movement speed ~7d" (the fixnum (round speed)))))
       (with-defense () player
         (ui:layout-space-push :x 0.02 :y 0.35 :w 1.0 :h 0.1)
-        (ui:label (format nil "evasion ~14d" (round evasion)))
+        (ui:label (format nil "evasion ~14d" (the fixnum (round evasion))))
         (ui:layout-space-push :x 0.02 :y 0.42 :w 1.0 :h 0.1)
-        (ui:label (format nil "block chance ~8d%" (round (* block-chance 100))))
+        (ui:label (format nil "block chance ~8d%" (the fixnum (round (* block-chance 100)))))
         (ui:layout-space-push :x 0.02 :y 0.49 :w 1.0 :h 0.1)
-        (ui:label (format nil "armor ~16d" (round armor))))
+        (ui:label (format nil "armor ~16d" (the fixnum (round armor)))))
       (with-offense () player
         (ui:layout-space-push :x 0.02 :y 0.56 :w 1.0 :h 0.1)
         (ui:label (format nil "attack range ~9d" (floor range +tile-size+)))
         (ui:layout-space-push :x 0.02 :y 0.63 :w 1.0 :h 0.1)
         (ui:label (format nil "attack speed ~7,1f/s" (/ 1 duration)))
         (ui:layout-space-push :x 0.02 :y 0.70 :w 1.0 :h 0.1)
-        (ui:label (format nil "accuracy ~13d" (round accuracy)))
+        (ui:label (format nil "accuracy ~13d" (the fixnum (round accuracy))))
         (ui:layout-space-push :x 0.02 :y 0.77 :w 1.0 :h 0.1)
-        (ui:label (format nil "min damage ~11d" (round min-damage)))
+        (ui:label (format nil "min damage ~11d" (the fixnum (round min-damage))))
         (ui:layout-space-push :x 0.02 :y 0.84 :w 1.0 :h 0.1)
-        (ui:label (format nil "max damage ~11d" (round max-damage))))
+        (ui:label (format nil "max damage ~11d" (the fixnum (round max-damage)))))
       (ui:layout-space-push :x 0.02 :y 1.0 :w 0.9 :h 0.9)
       (if (or *inventory-shown* *throw-window-shown*)
           (when (ecs:entity-valid-p *hovered-item*)
@@ -115,23 +115,23 @@
                                (format nil "HP  ~3d / ~3d"
                                        (health-points enemy) (health-max enemy))
                                (format nil "movement speed ~7d"
-                                       (round (character-speed enemy)))
+                                       (the fixnum (round (character-speed enemy))))
                                (format nil "evasion ~14d"
-                                       (round (defense-evasion enemy)))
+                                       (the fixnum (round (defense-evasion enemy))))
                                (format nil "block chance ~8d%"
-                                       (round (* (defense-block-chance enemy) 100)))
+                                       (the fixnum (round (* (defense-block-chance enemy) 100))))
                                (format nil "armor ~16d"
-                                       (round (defense-armor enemy)))
+                                       (the fixnum (round (defense-armor enemy))))
                                (format nil "attack range ~9d"
                                        (floor (offense-range enemy) +tile-size+))
                                (format nil "attack speed ~7,1f/s"
                                        (/ 1 (offense-duration enemy)))
                                (format nil "accuracy ~13d"
-                                       (round (offense-accuracy enemy)))
+                                       (the fixnum (round (offense-accuracy enemy))))
                                (format nil "min damage ~11d"
-                                       (round (offense-min-damage enemy)))
+                                       (the fixnum (round (offense-min-damage enemy))))
                                (format nil "max damage ~11d"
-                                       (round (offense-max-damage enemy))))
+                                       (the fixnum (round (offense-max-damage enemy)))))
                        :flags (:multiline :no-horizontal-scroll :read-only))))))))))))
 
 (ui:defwindow inventory (title items keyboard-state)
@@ -142,6 +142,7 @@
               (:item-color :window-header-active :r 0 :g 0 :b 0)
               (:item-color :window-header-normal :r 0 :g 0 :b 0)
               (:item-color :selectable-normal :r 0 :g 0 :b 0)))
+  (declare (type list items))
   (ui:layout-row-static :height +ui-font-size+ :item-width 375 :columns 1)
   (cffi:with-foreign-object (selected :int (length +inventory-keys+))
     (dotimes (i (length +inventory-keys+))
@@ -274,7 +275,7 @@
               (:item-color :window-header-normal :r 0 :g 0 :b 0)))
   (ui:layout-space (:height +ui-font-size+ :format :dynamic)
     (loop :for string :of-type simple-string :in +help-text+
-          :for i :from 0
+          :for i :of-type fixnum :from 0
           :do (ui:layout-space-push :x 0.02 :y i :w 1.0 :h 1.0)
               (ui:label string))))
 

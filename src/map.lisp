@@ -45,6 +45,9 @@
   (x2 0.0 :type single-float)
   (y2 0.0 :type single-float))
 
+(declaim
+ (ftype (function (single-float single-float single-float single-float) rect)
+        make-rect*))
 (defun make-rect* (x y w h)
   (make-rect :x1 x
              :y1 y
@@ -62,6 +65,9 @@
        (<= (rect-y1 rect1) (rect-y2 rect2))
        (>= (rect-y2 rect1) (rect-y1 rect2))))
 
+(declaim
+ (ftype (function (ecs:entity single-float single-float) (or ecs:entity null))
+        blocked))
 (defun blocked (entity x y)
   (loop :for tile :of-type ecs:entity :in (tiles (a*:encode-float-coordinates
                                                   (round/tile-size x)
@@ -73,6 +79,8 @@
                        (has-health-p tile)))
         :return tile))
 
+(declaim
+ (ftype (function (single-float single-float) (or ecs:entity null)) has-object))
 (defun has-object (x y)
   (loop :for tile :of-type ecs:entity :in (tiles (a*:encode-float-coordinates
                                                   (round/tile-size x)
@@ -84,6 +92,8 @@
                   (has-item-p tile))
           :return tile))
 
+(declaim (ftype (function (single-float single-float) (or ecs:entity null))
+                live-character-at))
 (defun live-character-at (x y)
   (loop :for tile :of-type ecs:entity :in (tiles (a*:encode-float-coordinates
                                                   (round/tile-size x)
@@ -102,8 +112,12 @@
   (0.2 :cripple-scroll)
   (0.2 :equipment))
 
+(declaim (ftype (function (ecs:entity
+                           single-float single-float single-float single-float))
+                place-objects))
 (defun place-objects (level x1 y1 x2 y2)
   (let ((level-number (level-number level)))
+    (declare (type (integer 0 10) level-number))
     (dotimes (_ (random (1+ +room-max-monsters+)))
       (let ((x (random-from-range (+ x1 +tile-size+) (- x2 +tile-size+)))
             (y (random-from-range (+ y1 +tile-size+) (- y2 +tile-size+))))
@@ -117,7 +131,7 @@
            (ecase (random-item)
              (:health-potion
               (make-health-potion level-number
-                                  (random-from-range (* 10  level-number)
+                                  (random-from-range (* 10 level-number)
                                                      (* 15 level-number))
                                   x y))
              (:fireball-scroll
@@ -135,6 +149,7 @@
          :entity level)))))
 
 (defun make-room (level x1 y1 x2 y2 &key first)
+  (declare (type single-float x1 y1 x2 y2))
   (loop
     :for x :of-type single-float
       :from (+ x1 +tile-size+) :below x2 :by +tile-size+
@@ -149,6 +164,7 @@
     :finally (unless first (place-objects level x1 y1 x2 y2))))
 
 (defun make-horizontal-tunnel (x1 x2 y)
+  (declare (type single-float x1 y x2))
   (loop
     :for x :of-type single-float
       :from (min x1 x2) :to (max x1 x2) :by +tile-size+
@@ -159,6 +175,7 @@
           (change-sprite tile *floor-tile*))))
 
 (defun make-vertical-tunnel (y1 y2 x)
+  (declare (type single-float x y1 y2))
   (loop
     :for y :of-type single-float
       :from (min y1 y2) :to (max y1 y2) :by +tile-size+

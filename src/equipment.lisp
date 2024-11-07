@@ -42,6 +42,7 @@
 
 (defun add-random-bonus (item ilvl)
   "Ugh."
+  (declare (type (integer 0 10) ilvl))
   (with-bonus () item
     (case (random 25)
       (0  (incf str-flat          (random ilvl)))
@@ -76,7 +77,8 @@
   `(loop :with mult :of-type single-float := 1.0
          :for item :in items
          :when (has-equipped-p item)
-         :sum (,(symbolicate :bonus- param :-flat) item) :into flat
+         :sum (,(symbolicate :bonus- param :-flat) item)
+         :into flat :of-type ,(if int 'fixnum 'single-float)
          :and :do (mulf mult (1+ (,(symbolicate :bonus- param :-mult) item)))
          :finally (return (,(if int 'floor 'identity)
                            (* (+ ,base-value flat) mult)))))
@@ -222,9 +224,10 @@
        (push
         ,(if flat
              `(format nil "~@d ~a" (round ,slot) ,name)
-             `(format nil "~@d% ~a" (round (* ,slot 100)) ,name)) 
+             `(format nil "~@d% ~a" (the fixnum (round (* ,slot 100))) ,name)) 
         descriptions))))
 
+(declaim (ftype (function (ecs:entity) simple-string) describe-equipment))
 (defun describe-equipment (item)
   (if (has-equipment-p item)
       (with-bonus () item
