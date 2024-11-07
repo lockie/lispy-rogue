@@ -26,17 +26,12 @@
     (setf view-explored 1))
   (al:draw-bitmap sprite-bitmap tile-col tile-row 0))
 
-(define-constant fog '(al::r 0.0 al::g 0.0 al::b 0.0 al::a 0.7) :test #'equalp)
-
 (ecs:defsystem draw-fow
   (:components-ro (tile view)
    :after (draw-map-sprites)
-   :when (and (not (plusp view-lit)) (plusp view-explored)))
-  (al:draw-filled-rectangle tile-col
-                            tile-row
-                            (+ tile-col +tile-size+)
-                            (+ tile-row +tile-size+)
-                            fog))
+   :when (and (not (plusp view-lit)) (plusp view-explored))
+   :with (fog := (sprite-bitmap (sprite-prefab :fog))))
+  (al:draw-bitmap fog tile-col tile-row 0))
 
 (define-constant +room-min-size+ (* 5  +tile-size+))
 (define-constant +room-max-size+ (* 10 +tile-size+))
