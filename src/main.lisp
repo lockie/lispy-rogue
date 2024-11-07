@@ -30,7 +30,7 @@
   (make-starting-equipment
    (make-player-object 0.0 0.0))
   (make-map 1)
-  (setf *message-log* nil)
+  (setf *message-log* "")
   (log-message "You enter the dungeon."))
 
 (declaim (type fixnum *fps*))

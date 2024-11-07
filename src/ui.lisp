@@ -15,7 +15,7 @@
     (ui:layout-space-push :x 0.02 :y 0.0 :w 0.97 :h 1.0)
     (setf *message-log-focused*
           (/= 2 (ui:edit
-                 (format nil "~{~a~^~%~}" *message-log*)
+                 *message-log*
                  :flags (:multiline :no-horizontal-scroll :selectable :clipboard)
                  :filter (cffi:callback %edit-filter))))))
 

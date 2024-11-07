@@ -160,8 +160,8 @@
 (defvar *should-quit*)
 (defvar *won* nil)
 
-(declaim (type list *message-log*))
-(defparameter *message-log* nil)
+(declaim (type simple-string *message-log*))
+(defparameter *message-log* "")
 
 (declaim (type boolean *message-log-focused*))
 (defparameter *message-log-focused* nil)
@@ -190,8 +190,13 @@
 (declaim (type boolean *targeting-key-pressed*))
 (defparameter *targeting-key-pressed* nil)
 
+(define-constant newline (format nil "~%") :test #'string=)
+
 (defun log-message (control &rest args)
-  (push (apply #'format nil control args) *message-log*))
+  (setf *message-log* (concatenate 'string
+                                   (apply #'format nil control args)
+                                   newline
+                                   *message-log*)))
 
 (declaim (inline mouse-state-x mouse-state-y mouse-state-buttons))
 (defun mouse-state-x (mouse-state)

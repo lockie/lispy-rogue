@@ -269,7 +269,7 @@
                 (return-from ecs:current-entity))
               (ecs:delete-entity current-level)
               (make-map new-level)
-              (setf *message-log* nil)
+              (setf *message-log* "")
               (log-message "You descend to the ~:r level." new-level)))
           (log-message "There is no stairs here."))
         (setf *turn* nil
