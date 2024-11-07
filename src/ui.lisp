@@ -257,7 +257,7 @@
     "f         start targeting ranged weapon (use the movement keys above to move the target)"
     "f, enter  pick a target when in targeting mode"
     ">         move down the stairs"
-    "g         grab the item from the floor"
+    "g, comma  grab the item from the floor"
     "i         show inventory window (use items by pressing correspoding keys 0..9, a, b, c)"
     "t         select an item to throw away (same)"
     "r, space  skip turn"
