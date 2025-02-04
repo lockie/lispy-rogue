@@ -31,7 +31,7 @@ jobs:
          sudo installer -pkg /tmp/MacPorts-2.10.5-13-Ventura.pkg -target /
          echo "/opt/local/bin" >> $GITHUB_PATH
       - name: Install prerequisites
-        run: sudo /opt/local/bin/port -N install sbcl || tail -n 200 /opt/local/var/macports/logs/_opt_local_var_macports_sources_rsync.macports.org_macports_release_tarballs_ports_lang_sbcl/sbcl/main.log
+        run: sudo /opt/local/bin/port -Nb install sbcl pkgconfig libffi dylibbundler allegro5
       - name: Install Quicklisp
         run: |
           wget -q https://beta.quicklisp.org/quicklisp.lisp -P /tmp
