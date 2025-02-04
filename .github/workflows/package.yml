@@ -27,8 +27,8 @@ jobs:
     steps:
       - name: Install macports
         run: |
-         wget -q https://github.com/macports/macports-base/releases/download/v2.9.1/MacPorts-2.9.1-12-Monterey.pkg -P /tmp
-         sudo installer -pkg /tmp/MacPorts-2.9.1-12-Monterey.pkg -target /
+         wget -q https://github.com/macports/macports-base/releases/download/v2.10.5/MacPorts-2.10.5-13-Ventura.pkg -P /tmp
+         sudo installer -pkg /tmp/MacPorts-2.10.5-13-Ventura.pkg -target /
          echo "/opt/local/bin" >> $GITHUB_PATH
       - name: Install prerequisites
         run: sudo /opt/local/bin/port -N install sbcl pkgconfig libffi dylibbundler allegro5
